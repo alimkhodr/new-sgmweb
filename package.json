@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@mui/icons-material": "^5.16.7",
+    "react-virtuoso": "^4.10.1"
+  }
+}
