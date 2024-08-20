@@ -1,4 +1,4 @@
-const { poolPromise } = require('../config/dbConfig');
+const { poolPromise } = require('../../config/dbConfig');
 
 const list_form_scrap = async (req, res) => {
     const { formulario } = req.body;

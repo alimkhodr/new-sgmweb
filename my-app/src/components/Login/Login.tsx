@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Button, Container, Snackbar, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, IconButton, InputAdornment, OutlinedInput, TextField, Typography, FormControl, InputLabel } from '@mui/material';
 import theme from '../../theme';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
-
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import Alert from '../../components/Alerts/AlertSnackbar';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 interface LoginProps {
     setIsAuthenticated: (value: boolean) => void;
@@ -16,8 +13,21 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [open, setOpen] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -34,53 +44,66 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
             setIsAuthenticated(true);
             navigate('/TelaInicial', { replace: true });
         } catch (err: any) {
-            setOpen(true);
+            setSnackbarMessage("Usuário ou senha incorreto");
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
+    
 
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     return (
-        <Container sx={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center"}} maxWidth="xs" >
-            <Box component="main" sx={{ p: 5, gap: 8}} bgcolor={theme.palette.background.paper} borderRadius={5}>
-                <Typography variant="h5" component="h1" gutterBottom>
+        <Container sx={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }} maxWidth="xs">
+            <Box component="main" sx={{ p: 5, gap: 8 }} bgcolor={theme.palette.background.paper} borderRadius={5}>
+                <Typography variant="h1" component="h1" gutterBottom fontWeight={"bold"}>
                     Login
                 </Typography>
                 <form onSubmit={handleSubmit}>
-                    <TextField
-                        label="Username"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <Button type="submit" variant="contained" color="secondary" fullWidth>
-                        Login
-                    </Button>
+                    <Box gap={2} display={'flex'} flexDirection={'column'}>
+                        <TextField
+                            label="Username"
+                            variant="outlined"
+                            fullWidth
+                            margin="none"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                        <FormControl variant="outlined" fullWidth>
+                            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                            <OutlinedInput
+                                id="outlined-adornment-password"
+                                type={showPassword ? 'text' : 'password'}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                                label="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </FormControl>
+                        <Button type="submit" variant="contained" color="secondary" fullWidth>
+                            Login
+                        </Button>
+                    </Box>
                 </form>
             </Box>
-            <Snackbar
-                open={open}
-                autoHideDuration={2000} // Fecha após 2 segundos
-                onClose={handleClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Define a posição do Snackbar
-            >
-                <Alert onClose={handleClose} severity="error">
-                    Credenciais inválidas
-                </Alert>
-            </Snackbar>
+
+            {/* Alerts */}
+            <Alert
+                open={snackbarOpen}
+                handleClose={handleCloseSnackbar}
+                message={snackbarMessage}
+                severity={snackbarSeverity}
+            />
         </Container>
     );
 };

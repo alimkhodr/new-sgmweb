@@ -5,13 +5,18 @@ import NotFoundPage from './pages/NotFoundPage';
 import TelaInicial from './pages/TelaInicial';
 import Login from './components/Login/Login';
 import Scrap from './pages/Manufatura/Scrap';
+import { checkTokenValidity } from './utils/checkTokenValidity';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token') && !!localStorage.getItem('username'));
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
+    const validateToken = async () => {
+      const isValid = await checkTokenValidity();
+      setIsAuthenticated(isValid);
+    };
+
+    validateToken();
   }, []);
 
   return (

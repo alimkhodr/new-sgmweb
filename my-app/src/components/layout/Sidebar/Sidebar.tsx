@@ -219,7 +219,7 @@ export default function Sidebar() {
                             <ListItem disablePadding>
                                 <ListItemButton onClick={handleLogout}>
                                     <ListItemIcon>
-                                        <LogoutIcon />
+                                        <LogoutIcon /> 
                                     </ListItemIcon>
                                     <ListItemText>
                                         <Typography><strong>Logout</strong> {username}</Typography>

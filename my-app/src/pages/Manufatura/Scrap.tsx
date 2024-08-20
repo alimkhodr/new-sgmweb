@@ -1,25 +1,25 @@
-import {Container, Grid, TextField, Typography } from "@mui/material";
-import theme from "../../theme";
-import VirtualizedTable from "../../components/Tables/VirtualizedTable/VirtualizedTable";
-import { useState } from "react";
-import axios from "axios";
-import ErrorAlert from "../../components/Alerts/AlertSnackbar";
-import StyledButton from "../../components/StyledButton/StyledButton";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Container, Grid, Typography, Button, TextField, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VirtualizedTable from '../../components/Tables/VirtualizedTable/VirtualizedTable';
+import Alert from '../../components/Alerts/AlertSnackbar';
+import theme from '../../theme';
 
 interface Data {
-    [key: string]: any; // Ajuste conforme necessário
+    [key: string]: any;
 }
-
 
 const predefinedColumns = [
     { width: 50, label: 'ID', dataKey: 'ID' },
-    { width: 100, label: 'PN', dataKey: 'PN' },
-    { width: 100, label: 'QTD', dataKey: 'QTD' },
-    { width: 100, label: 'CT/MAQ', dataKey: 'CT/MAQ' },
-    { width: 100, label: 'DATA', dataKey: 'DATA' },
-    { width: 100, label: 'REGISTRO', dataKey: 'REGISTRO' },
-    { width: 100, label: 'CARTÃO', dataKey: 'CARTÃO' },
-    { width: 100, label: 'LIMPEZA', dataKey: 'LIMPEZA' }
+    { width: 80, label: 'PN', dataKey: 'PN' },
+    { width: 90, label: 'QTD', dataKey: 'QTD' },
+    { width: 80, label: 'CT/MAQ', dataKey: 'CT/MAQ' },
+    { width: 95, label: 'DATA', dataKey: 'DATA' },
+    { width: 95, label: 'REGISTRO', dataKey: 'REGISTRO' },
+    { width: 80, label: 'CARTÃO', dataKey: 'CARTÃO' },
+    { width: 80, label: 'LIMPEZA', dataKey: 'LIMPEZA' },
+    { width: 50, label: '', dataKey: 'DELETAR' }
 ];
 
 const Scrap = () => {
@@ -29,6 +29,13 @@ const Scrap = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
+    const timer = React.useRef<ReturnType<typeof setTimeout>>();
+
+    React.useEffect(() => {
+        return () => {
+            clearTimeout(timer.current);
+        };
+    }, []);
 
     const listScrap = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -41,17 +48,37 @@ const Scrap = () => {
         }
 
         try {
-            const response = await axios.post<{ data: Data[] }>('http://localhost:5000/api/list_form_scrap', { formulario }); 
+            const response = await axios.post<{ data: Data[] }>('http://localhost:5000/api/auth/list_form_scrap', { formulario });
             const formattedData = response.data.data.map(row => {
                 return {
                     ...row,
-                    DATA: row.DATA.split('T')[0] // Remove a parte 'T00:00:00.000Z'
+                    DATA: row.DATA.split('T')[0], // Remove a parte 'T00:00:00.000Z'
+                    DELETAR: (
+                        <IconButton aria-label="delete" onClick={() => deleScrap(row.ID)}>
+                            <DeleteIcon />
+                        </IconButton>
+                    )
                 };
             });
             setRows(formattedData);
         } catch (error) {
             console.error("Erro ao buscar dados:", error);
             setSnackbarMessage("Ocorreu um erro ao carregar os dados");
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+        }
+    };
+
+    const deleScrap = async (id: number) => {
+        try {
+            await axios.delete(`http://localhost:5000/api/auth/delete_scrap/${id}`);
+            setRows(prevRows => prevRows.filter(row => row.ID !== id));
+            setSnackbarMessage("Registro deletado com sucesso");
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+        } catch (error) {
+            console.error("Erro ao deletar o registro:", error);
+            setSnackbarMessage("Ocorreu um erro ao deletar o registro");
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
         }
@@ -64,6 +91,7 @@ const Scrap = () => {
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
     };
+
 
     return (
         <Container>
@@ -88,12 +116,12 @@ const Scrap = () => {
                             display: "flex",
                             flexDirection: "column",
                             gap: 2,
+                            justifyContent: "space-between"
                         }}
                     >
-                        <StyledButton>
+                        <Button variant="contained" color="secondary">
                             <strong>Novo formulário</strong>
-                        </StyledButton>
-                        <hr/>
+                        </Button>
                         <TextField
                             required
                             id="outlined-required"
@@ -101,9 +129,10 @@ const Scrap = () => {
                             fullWidth
                             onChange={handleChange}
                         />
-                        <StyledButton onClick={listScrap}>
+                        {/* Outros TextFields conforme necessário */}
+                        <Button onClick={listScrap} variant="contained" color="secondary">
                             <strong>Buscar Formulário</strong>
-                        </StyledButton>
+                        </Button>
                     </Grid>
                     <Grid item xs={12} md={9} sx={{ minHeight: 500 }}>
                         <VirtualizedTable columns={columns} data={rows} />
@@ -111,7 +140,7 @@ const Scrap = () => {
                 </Grid>
             </Grid>
             {/* Alerts */}
-            <ErrorAlert
+            <Alert
                 open={snackbarOpen}
                 handleClose={handleCloseSnackbar}
                 message={snackbarMessage}
