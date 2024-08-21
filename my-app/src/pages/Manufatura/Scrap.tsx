@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, Button, TextField, IconButton } from '@mui/material';
+import { Container, Grid, Typography, TextField, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VirtualizedTable from '../../components/Tables/VirtualizedTable/VirtualizedTable';
 import Alert from '../../components/Alerts/AlertSnackbar';
 import theme from '../../theme';
+import StyledButton from '../../components/StyledButton/StyledButton';
 
 interface Data {
     [key: string]: any;
@@ -26,6 +27,7 @@ const Scrap = () => {
     const [columns] = useState(predefinedColumns);
     const [rows, setRows] = useState<Data[]>([]);
     const [formulario, setFormulario] = useState<string>('');
+    const [fixedformulario, setfixedformulario] = useState<string>('');
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
@@ -37,37 +39,53 @@ const Scrap = () => {
         };
     }, []);
 
-    const listScrap = async (event: React.FormEvent) => {
-        event.preventDefault();
-
+    const listScrap = async (event?: React.FormEvent) => {
+        if (event) event.preventDefault();
+    
         if (!formulario.trim()) {
             setSnackbarMessage("O campo formulário não pode estar vazio.");
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
             return;
         }
-
+    
         try {
             const response = await axios.post<{ data: Data[] }>('http://localhost:5000/api/auth/list_form_scrap', { formulario });
+            
+            if (response.status === 200 && response.data.data.length === 0) {
+                setSnackbarMessage("Formulário não encontrado.");
+                setSnackbarSeverity('warning');
+                setSnackbarOpen(true);
+                return;
+            }
+            
             const formattedData = response.data.data.map(row => {
+                setfixedformulario(formulario);
                 return {
                     ...row,
-                    DATA: row.DATA.split('T')[0], // Remove a parte 'T00:00:00.000Z'
+                    DATA: row.DATA.split('T')[0],
                     DELETAR: (
                         <IconButton aria-label="delete" onClick={() => deleScrap(row.ID)}>
                             <DeleteIcon />
                         </IconButton>
-                    )
+                    )                 
                 };
             });
             setRows(formattedData);
         } catch (error) {
-            console.error("Erro ao buscar dados:", error);
-            setSnackbarMessage("Ocorreu um erro ao carregar os dados");
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                setSnackbarMessage("Formulário não encontrado.");
+                setSnackbarSeverity('warning');
+                setSnackbarOpen(true);
+            } else {
+                console.error("Erro ao buscar dados:", error);
+                setSnackbarMessage("Ocorreu um erro ao carregar os dados");
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+            }
         }
     };
+    
 
     const deleScrap = async (id: number) => {
         try {
@@ -88,10 +106,15 @@ const Scrap = () => {
         setFormulario(event.target.value);
     };
 
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            listScrap();
+        }
+    };
+
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
     };
-
 
     return (
         <Container>
@@ -119,27 +142,27 @@ const Scrap = () => {
                             justifyContent: "space-between"
                         }}
                     >
-                        <Button variant="contained" color="secondary">
+                        <StyledButton variant="contained">
                             <strong>Novo formulário</strong>
-                        </Button>
+                        </StyledButton>
                         <TextField
                             required
                             id="outlined-required"
                             label="Formulário"
                             fullWidth
                             onChange={handleChange}
+                            onKeyPress={handleKeyPress}
                         />
-                        {/* Outros TextFields conforme necessário */}
-                        <Button onClick={listScrap} variant="contained" color="secondary">
+                        <StyledButton variant="contained">
                             <strong>Buscar Formulário</strong>
-                        </Button>
+                        </StyledButton>
                     </Grid>
                     <Grid item xs={12} md={9} sx={{ minHeight: 500 }}>
                         <VirtualizedTable columns={columns} data={rows} />
+                        <Typography m={1} variant="caption" display={"flex"} justifyContent={"flex-end"}>{ fixedformulario }</Typography>
                     </Grid>
                 </Grid>
             </Grid>
-            {/* Alerts */}
             <Alert
                 open={snackbarOpen}
                 handleClose={handleCloseSnackbar}
@@ -148,6 +171,6 @@ const Scrap = () => {
             />
         </Container>
     );
-}
+};
 
 export default Scrap;

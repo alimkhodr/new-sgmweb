@@ -1,10 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Home from './pages/Home';
+import Login from './pages/Login/Login';
+import Scrap from './pages/Manufatura/Scrap';
 import NotFoundPage from './pages/NotFoundPage';
 import TelaInicial from './pages/TelaInicial';
-import Login from './components/Login/Login';
-import Scrap from './pages/Manufatura/Scrap';
 import { checkTokenValidity } from './utils/checkTokenValidity';
 
 function App() {

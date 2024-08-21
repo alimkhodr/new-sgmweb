@@ -1,10 +1,11 @@
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Box, Container, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { Box, Button, Container, IconButton, InputAdornment, OutlinedInput, TextField, Typography, FormControl, InputLabel } from '@mui/material';
-import theme from '../../theme';
 import Alert from '../../components/Alerts/AlertSnackbar';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import StyledButton from '../../components/StyledButton/StyledButton';
+import theme from '../../theme';
 
 interface LoginProps {
     setIsAuthenticated: (value: boolean) => void;
@@ -90,9 +91,9 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </FormControl>
-                        <Button type="submit" variant="contained" color="secondary" fullWidth>
+                        <StyledButton type="submit" variant="contained" color="secondary" fullWidth>
                             Login
-                        </Button>
+                        </StyledButton>
                     </Box>
                 </form>
             </Box>

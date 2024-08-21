@@ -21,7 +21,7 @@ let theme = createTheme({
             main: '#4caf50', // Verde
         },
         background: {
-            default: '#00000', // Branco
+            default: '#ffffff', // Branco
             paper: '#f5f5f5', // Cinza claro
         },
     },
