@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse, Divider, IconButton, CssBaseline, AppBar as MuiAppBar, Toolbar, Alert, Typography, Tooltip } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Collapse, Divider, IconButton, CssBaseline, AppBar as MuiAppBar, Toolbar, Alert } from '@mui/material';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -9,7 +9,6 @@ import MuiDrawer from '@mui/material/Drawer';
 import { menuItems } from '../../../config/menuConfig';
 import Logo from "../../../assets/images/logo/aptiv_logo_white.png";
 import { ExpandMore } from '@mui/icons-material';
-import LogoutIcon from '@mui/icons-material/Logout';
 import Profile from '../Profile/Profile';
 
 const drawerWidth = 240;
@@ -88,8 +87,6 @@ export default function Sidebar() {
     const [open, setOpen] = React.useState(false);
     const [openSubmenu, setOpenSubmenu] = React.useState<string | null>(null);
 
-    const username = localStorage.getItem('username') || 'Usuário';
-
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -115,12 +112,6 @@ export default function Sidebar() {
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        navigate('/Login', { replace: true });
-    };
-
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -143,7 +134,9 @@ export default function Sidebar() {
                         marginRight: "10px",
                         cursor: "pointer" // Adiciona o cursor pointer
                     }} onClick={() => navigate('/TelaInicial')} />
-                    <Profile/>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
+                        <Profile />
+                    </Box>
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>
@@ -211,25 +204,6 @@ export default function Sidebar() {
                         </React.Fragment>
                     ))}
                 </List>
-
-                <Box sx={{ position: 'absolute', bottom: 0, width: '100%' }}>
-                    <Divider />
-                    <List>
-                        <Tooltip title="Sair">
-                            <ListItem disablePadding>
-                                <ListItemButton onClick={handleLogout}>
-                                    <ListItemIcon>
-                                        <LogoutIcon /> 
-                                    </ListItemIcon>
-                                    <ListItemText>
-                                        <Typography><strong>Logout</strong> {username}</Typography>
-                                    </ListItemText>
-                                </ListItemButton>
-                            </ListItem>
-                        </Tooltip>
-                    </List>
-                </Box>
-
             </Drawer>
         </Box>
     );

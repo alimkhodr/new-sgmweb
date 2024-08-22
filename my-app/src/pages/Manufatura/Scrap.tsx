@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, TextField, IconButton } from '@mui/material';
+import { Container, Grid, Typography, TextField, IconButton, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VirtualizedTable from '../../components/Tables/VirtualizedTable/VirtualizedTable';
 import Alert from '../../components/Alerts/AlertSnackbar';
@@ -41,24 +41,24 @@ const Scrap = () => {
 
     const listScrap = async (event?: React.FormEvent) => {
         if (event) event.preventDefault();
-    
+
         if (!formulario.trim()) {
             setSnackbarMessage("O campo formulário não pode estar vazio.");
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
             return;
         }
-    
+
         try {
             const response = await axios.post<{ data: Data[] }>('http://localhost:5000/api/auth/list_form_scrap', { formulario });
-            
+
             if (response.status === 200 && response.data.data.length === 0) {
                 setSnackbarMessage("Formulário não encontrado.");
                 setSnackbarSeverity('warning');
                 setSnackbarOpen(true);
                 return;
             }
-            
+
             const formattedData = response.data.data.map(row => {
                 setfixedformulario(formulario);
                 return {
@@ -68,7 +68,7 @@ const Scrap = () => {
                         <IconButton aria-label="delete" onClick={() => deleScrap(row.ID)}>
                             <DeleteIcon />
                         </IconButton>
-                    )                 
+                    )
                 };
             });
             setRows(formattedData);
@@ -85,7 +85,7 @@ const Scrap = () => {
             }
         }
     };
-    
+
 
     const deleScrap = async (id: number) => {
         try {
@@ -142,9 +142,7 @@ const Scrap = () => {
                             justifyContent: "space-between"
                         }}
                     >
-                        <StyledButton variant="contained">
-                            <strong>Novo formulário</strong>
-                        </StyledButton>
+                        <StyledButton variant="contained">Novo formulário</StyledButton>
                         <TextField
                             required
                             id="outlined-required"
@@ -153,13 +151,118 @@ const Scrap = () => {
                             onChange={handleChange}
                             onKeyPress={handleKeyPress}
                         />
-                        <StyledButton variant="contained">
-                            <strong>Buscar Formulário</strong>
-                        </StyledButton>
+                        <Box gap={2} display={"flex"} >
+                            <TextField
+                                required
+                                id="outlined-required"
+                                label="CT"
+                                sx={{ width: 1 / 2 }}
+                            />
+                            <TextField
+                                required
+                                id="outlined-required"
+                                label="Maquina"
+                                sx={{ width: 1 / 2 }}
+                            />
+                        </Box>
+
+                        <TextField
+                            required
+                            id="outlined-required"
+                            label="Data"
+                            fullWidth
+                        />
+                        <TextField
+                            required
+                            id="outlined-required"
+                            label="Registro"
+                            fullWidth
+                        />
+                        <TextField
+                            required
+                            id="outlined-required"
+                            label="Partnumber"
+                            fullWidth
+                        />
+                        <TextField
+                            required
+                            id="outlined-required"
+                            label="Turno"
+                            fullWidth
+                        />
+                        <TextField
+                            required
+                            id="outlined-required"
+                            label="Quantidade"
+                            fullWidth
+                        />
+                        <TextField
+                            required
+                            id="outlined-required"
+                            label="Código de Scrap"
+                            fullWidth
+                        />
+                        <TextField
+                            required
+                            id="outlined-required"
+                            label="Cartão Vermelho"
+                            fullWidth
+                        />
+                        <TextField
+                            required
+                            id="outlined-required"
+                            label="Material de Limpeza"
+                            fullWidth
+                        />
+                        <StyledButton variant="contained">Apontar</StyledButton>
                     </Grid>
-                    <Grid item xs={12} md={9} sx={{ minHeight: 500 }}>
-                        <VirtualizedTable columns={columns} data={rows} />
-                        <Typography m={1} variant="caption" display={"flex"} justifyContent={"flex-end"}>{ fixedformulario }</Typography>
+                    <Grid
+                        item
+                        xs={12}
+                        md={9}
+                        sx={{
+                            minHeight: 500,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            overflow: 'hidden',
+                        }}
+                        gap={2}
+                    >
+                        <Box 
+                        p={2}
+                            display={'flex'}
+                            alignItems={'center'}
+                            flexDirection={{ xs: "column", md: "row" }}
+                            sx={{
+                                border: `1px solid ${theme.palette.grey[400]}`,
+                                borderRadius: "5px",
+                            }}
+                        >
+                            <Box width={{ xs: "1/3", md: "1/1" }}>
+                                <Typography variant="h5" component="div">
+                                    <strong>Formulário -</strong> {fixedformulario}
+                                </Typography>
+                                <Typography variant="h6" component="div">
+                                    <strong>Status -</strong> Em andamento
+                                </Typography>
+                            </Box>
+                            <Box width={{ xs: "2/3", md: "1/1" }}>
+                                <TextField
+                                    required
+                                    id="outlined-required"
+                                    label="Aprovador"
+                                    fullWidth
+                                />
+                            </Box>
+                        </Box>
+                        <Box
+                            sx={{
+                                flex: '1 1 auto',
+                                overflow: 'auto',
+                            }}
+                        >
+                            <VirtualizedTable columns={columns} data={rows} />
+                        </Box>
                     </Grid>
                 </Grid>
             </Grid>

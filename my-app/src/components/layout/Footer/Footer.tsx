@@ -3,6 +3,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { Box, Grid, styled, Typography } from "@mui/material";
 import Logo from "../../../assets/images/logo/aptiv_logo_white.png"
+import theme from '../../../theme';
 
 const StyledFooter = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -14,14 +15,14 @@ const StyledFooter = styled("div")(({ theme }) => ({
   height: "100%"
 }));
 
-const StyledHr = styled("hr")(({ theme }) => ({
+const StyledHr = styled("hr")(() => ({
   border: `none`,
   height: "1px",
-  backgroundColor: theme.palette.primary.contrastText,
+  backgroundColor: theme.palette.grey[600],
   margin: theme.spacing(2, 0),
 }));
 
-const IconLink = styled("a")(({ theme }) => ({
+const IconLink = styled("a")(() => ({
   textDecoration: 'none',
   color: theme.palette.primary.contrastText,
   borderRadius: "10px",
@@ -35,7 +36,7 @@ const IconLink = styled("a")(({ theme }) => ({
 
 const Link = styled("a")(() => ({
   textDecoration: 'none',
-  color: "#aeaeae",
+  color: theme.palette.grey[600],
   transition: 'textDecoration 0.5s',
   '&:hover': {
     textDecoration: 'underline',

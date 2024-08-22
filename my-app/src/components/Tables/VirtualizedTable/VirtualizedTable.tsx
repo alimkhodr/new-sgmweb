@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
-
+import theme from '../../../theme';
 interface Data {
   [key: string]: any;
 }
@@ -32,7 +32,7 @@ const VirtuosoTableComponents: TableComponents<Data> = {
       ref={ref}
       sx={{
         boxShadow: 'none',
-        border: '1px solid rgb(224 224 224)',
+      border: `1px solid ${theme.palette.grey[400]}`,
       }}
     />
   )),
@@ -81,7 +81,7 @@ function VirtualizedTable({ columns, data }: VirtualizedTableProps) {
   );
 
   return (
-    <Paper style={{ height: '100%', width: '100%', boxShadow: 'none'}}>
+    <Paper style={{ height: '100%', width: '100%', boxShadow: 'none' }}>
       <TableVirtuoso
         data={data}
         components={VirtuosoTableComponents}

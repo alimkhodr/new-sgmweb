@@ -1,21 +1,15 @@
-export const checkTokenValidity = async () => {
-    try {
-        const response = await fetch('/api/check-token', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            },
-        });
+import axios from 'axios';
 
-        if (response.status === 403) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('username');
-            return false;
-        }
+export const checkTokenValidity = async (token: string): Promise<boolean> => {
+  try {
+    const response = await axios.get('http://localhost:5000/api/auth/protected', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
-        return response.ok;
-    } catch (error) {
-        console.error('Erro ao verificar o token:', error);
-        return false;
-    }
+    return response.status === 200;
+  } catch (error) {
+    return false;
+  }
 };

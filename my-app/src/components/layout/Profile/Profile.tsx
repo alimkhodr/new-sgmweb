@@ -8,11 +8,13 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Logout from '@mui/icons-material/Logout';
+import { useNavigate } from 'react-router-dom';
 
 export default function AccountMenu() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-    const username = localStorage.getItem('username') || 'Usuário';
+    const navigate = useNavigate();
+    const [userNome, setUserNome] = React.useState('Usuário');
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -20,19 +22,50 @@ export default function AccountMenu() {
         setAnchorEl(null);
     };
     
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        navigate('/Login', { replace: true });
+    };
+
+    React.useEffect(() => {
+        async function fetchUserName() {
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/user_nome', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: localStorage.getItem('username') || 'Usuário' }),
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                setUserNome(data.toUpperCase());
+            } catch (error) {
+                console.error('Erro ao buscar o nome do usuário:', error);
+            }
+        }
+           
+        fetchUserName();
+    }, []);
+
+    const firstLetter = userNome && userNome[0].toUpperCase();
+
     return (
         <React.Fragment>
             <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-                <Tooltip title="Account settings">
+                <Tooltip title={userNome}>
                     <IconButton
                         onClick={handleClick}
                         size="small"
-                        sx={{ ml: 2 }}
+                        sx={{ ml: 2}}
                         aria-controls={open ? 'account-menu' : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
                     >
-                        <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+                        <Avatar sx={{ width: 40, height: 40 }}>{firstLetter}</Avatar>
                     </IconButton>
                 </Tooltip>
             </Box>
@@ -72,10 +105,10 @@ export default function AccountMenu() {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
                 <MenuItem>
-                    <Avatar />{username}
+                    <Avatar>{firstLetter}</Avatar>{userNome}
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                         <Logout fontSize="small" />
                     </ListItemIcon>
