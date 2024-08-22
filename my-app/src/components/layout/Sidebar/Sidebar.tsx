@@ -4,13 +4,13 @@ import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-// import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import MenuIcon from '@mui/icons-material/Menu';
 import MuiDrawer from '@mui/material/Drawer';
 import { menuItems } from '../../../config/menuConfig';
 import Logo from "../../../assets/images/logo/aptiv_logo_white.png";
 import { ExpandMore } from '@mui/icons-material';
 import LogoutIcon from '@mui/icons-material/Logout';
+import Profile from '../Profile/Profile';
 
 const drawerWidth = 240;
 
@@ -143,7 +143,7 @@ export default function Sidebar() {
                         marginRight: "10px",
                         cursor: "pointer" // Adiciona o cursor pointer
                     }} onClick={() => navigate('/TelaInicial')} />
-
+                    <Profile/>
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>
