@@ -5,7 +5,7 @@ const TelaInicial = () => {
   return (
     <>
       <Container>
-        <Box component="main" sx={{ p: 3, marginBottom: 5, marginTop:12}} bgcolor={theme.palette.background.paper} borderRadius={5}>
+        <Box component="main" sx={{ p: 3, marginBottom: 5, marginTop:12}} bgcolor={theme.palette.background.paper} borderRadius={2}>
           <Typography paragraph>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
             tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non

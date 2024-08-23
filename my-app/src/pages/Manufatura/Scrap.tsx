@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, TextField, IconButton, Box } from '@mui/material';
+import { Container, Grid, Typography, TextField, IconButton, Box, styled, colors } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VirtualizedTable from '../../components/Tables/VirtualizedTable/VirtualizedTable';
 import Alert from '../../components/Alerts/AlertSnackbar';
@@ -10,6 +10,13 @@ import StyledButton from '../../components/StyledButton/StyledButton';
 interface Data {
     [key: string]: any;
 }
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+    padding:"4px",
+    '&:hover': {
+        color: theme.palette.error.main,
+    },
+  }));
 
 const predefinedColumns = [
     { width: 50, label: 'ID', dataKey: 'ID' },
@@ -65,9 +72,9 @@ const Scrap = () => {
                     ...row,
                     DATA: row.DATA.split('T')[0],
                     DELETAR: (
-                        <IconButton aria-label="delete" onClick={() => deleScrap(row.ID)}>
-                            <DeleteIcon />
-                        </IconButton>
+                        <StyledIconButton aria-label="delete" onClick={() => deleScrap(row.ID)}>
+                            <DeleteIcon/>
+                        </StyledIconButton>
                     )
                 };
             });
@@ -122,7 +129,7 @@ const Scrap = () => {
                 component="main"
                 sx={{ p: 5, marginBottom: 5, marginTop: 12 }}
                 bgcolor={theme.palette.background.paper}
-                borderRadius={5}
+                borderRadius={2}
             >
                 <Grid>
                     <Typography variant="h1" padding={"0 0 30px 0"} fontWeight={"bold"}>
@@ -228,8 +235,8 @@ const Scrap = () => {
                         }}
                         gap={2}
                     >
-                        <Box 
-                        p={2}
+                        <Box
+                            p={2}
                             display={'flex'}
                             alignItems={'center'}
                             flexDirection={{ xs: "column", md: "row" }}
@@ -237,16 +244,17 @@ const Scrap = () => {
                                 border: `1px solid ${theme.palette.grey[400]}`,
                                 borderRadius: "5px",
                             }}
+                            gap={1}
                         >
-                            <Box width={{ xs: "1/3", md: "1/1" }}>
+                            <Box width={"100%"}>
                                 <Typography variant="h5" component="div">
                                     <strong>Formulário -</strong> {fixedformulario}
                                 </Typography>
                                 <Typography variant="h6" component="div">
-                                    <strong>Status -</strong> Em andamento
+                                    <strong>Status - </strong>{rows.length > 0 && rows[0].STATUS}
                                 </Typography>
                             </Box>
-                            <Box width={{ xs: "2/3", md: "1/1" }}>
+                            <Box width={"100%"}>
                                 <TextField
                                     required
                                     id="outlined-required"
