@@ -6,6 +6,7 @@ import Scrap from './pages/Manufatura/Scrap';
 import NotFoundPage from './pages/NotFoundPage';
 import TelaInicial from './pages/TelaInicial';
 import { checkTokenValidity } from './utils/checkTokenValidity';
+import Circular from './components/Progress/Circular';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -29,8 +30,7 @@ function App() {
   return (
     <Router>
       {isAuthenticated === null ? (
-        // Mostre um carregando ou uma tela em branco enquanto verifica a autenticação
-        <div>Loading...</div>
+<div style={{display: "flex",justifyContent: "center",alignItems: "center",height: "100vh"}} ><Circular/></div>
       ) : (
         <Routes>
           <Route path="/" element={isAuthenticated ? <Navigate to="/TelaInicial" /> : <Navigate to="/Login" />} />

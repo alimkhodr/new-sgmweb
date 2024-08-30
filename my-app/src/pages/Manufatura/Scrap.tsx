@@ -1,22 +1,31 @@
-import React, { useState } from 'react';
 import axios from 'axios';
-import { Container, Grid, Typography, TextField, IconButton, Box, styled, colors } from '@mui/material';
+import {
+    Container, Grid, Typography, TextField, IconButton, Box, styled, MenuItem, InputAdornment
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VirtualizedTable from '../../components/Tables/VirtualizedTable/VirtualizedTable';
 import Alert from '../../components/Alerts/AlertSnackbar';
 import theme from '../../theme';
 import StyledButton from '../../components/StyledButton/StyledButton';
+import api from '../../config/axiosConfig';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs, { Dayjs } from 'dayjs';
+import 'dayjs/locale/pt-br';
+import { ChangeEvent, useEffect, useState } from 'react';
+import React from 'react';
 
 interface Data {
     [key: string]: any;
 }
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
-    padding:"4px",
+    padding: '4px',
     '&:hover': {
         color: theme.palette.error.main,
     },
-  }));
+}));
 
 const predefinedColumns = [
     { width: 50, label: 'ID', dataKey: 'ID' },
@@ -27,40 +36,90 @@ const predefinedColumns = [
     { width: 95, label: 'REGISTRO', dataKey: 'REGISTRO' },
     { width: 80, label: 'CARTÃO', dataKey: 'CARTÃO' },
     { width: 80, label: 'LIMPEZA', dataKey: 'LIMPEZA' },
-    { width: 50, label: '', dataKey: 'DELETAR' }
+    { width: 50, label: '', dataKey: 'DELETAR' },
 ];
 
 const Scrap = () => {
     const [columns] = useState(predefinedColumns);
     const [rows, setRows] = useState<Data[]>([]);
     const [formulario, setFormulario] = useState<string>('');
+    const [ct, setCt] = useState<string>('');
     const [fixedformulario, setfixedformulario] = useState<string>('');
     const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
-    const timer = React.useRef<ReturnType<typeof setTimeout>>();
+    const [aprovador, setAprovador] = useState<number>();
+    const [status, setStatus] = useState<string>('');
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+    const [ctOptions, setCtOptions] = useState<string[]>([]);
+    const [maquinaOptions, setMaquinaOptions] = useState<string[]>([]);
 
-    React.useEffect(() => {
-        return () => {
-            clearTimeout(timer.current);
-        };
+    useEffect(() => {
+        fetchCtMaquinaOptions();
     }, []);
+
+    useEffect(() => {
+        // Atualiza as opções de Máquinas quando o CT é alterado
+        if (ct) {
+            fetchMaquinasByCt();
+        }
+    }, [ct]);
+
+    const fetchCtMaquinaOptions = async () => {
+        try {
+            const response = await api.post('/auth/list_linha', { ct: '' });
+            const { data } = response;
+            const ctSet = new Set<string>();
+            const maquinaSet = new Set<string>();
+
+            data.data.forEach((item: { CT: string, MAQUINA: string }) => {
+                ctSet.add(item.CT);
+                maquinaSet.add(item.MAQUINA);
+            });
+
+            setCtOptions(Array.from(ctSet));
+
+            if (ct) {
+                fetchMaquinasByCt();
+            } else {
+                setMaquinaOptions(Array.from(maquinaSet));
+            }
+        } catch (error) {
+            console.error('Erro ao buscar opções de CT e MAQUINA:', error);
+        }
+    };
+
+    const fetchMaquinasByCt = async () => {
+        try {
+            const response = await api.post('/auth/list_linha', { ct });
+            const { data } = response;
+            const maquinaSet = new Set<string>();
+
+            data.data.forEach((item: { MAQUINA: string }) => {
+                maquinaSet.add(item.MAQUINA);
+            });
+
+            setMaquinaOptions(Array.from(maquinaSet));
+        } catch (error) {
+            console.error('Erro ao buscar máquinas para o CT selecionado:', error);
+        }
+    };
 
     const listScrap = async (event?: React.FormEvent) => {
         if (event) event.preventDefault();
 
         if (!formulario.trim()) {
-            setSnackbarMessage("O campo formulário não pode estar vazio.");
+            setSnackbarMessage('O campo formulário não pode estar vazio.');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
             return;
         }
 
         try {
-            const response = await axios.post<{ data: Data[] }>('http://localhost:5000/api/auth/list_form_scrap', { formulario });
+            const response = await api.post<{ data: Data[] }>('/auth/list_form_scrap', { formulario });
 
             if (response.status === 200 && response.data.data.length === 0) {
-                setSnackbarMessage("Formulário não encontrado.");
+                setSnackbarMessage('Formulário não encontrado.');
                 setSnackbarSeverity('warning');
                 setSnackbarOpen(true);
                 return;
@@ -68,49 +127,59 @@ const Scrap = () => {
 
             const formattedData = response.data.data.map(row => {
                 setfixedformulario(formulario);
+                setAprovador(row.APROVADOR === null ? 0 : row.APROVADOR);
+                setStatus(row.STATUS);
+
                 return {
                     ...row,
                     DATA: row.DATA.split('T')[0],
-                    DELETAR: (
-                        <StyledIconButton aria-label="delete" onClick={() => deleScrap(row.ID)}>
-                            <DeleteIcon/>
+                    DELETAR: row.STATUS === 'CRIADO' ? (
+                        <StyledIconButton
+                            aria-label="delete"
+                            onClick={() => deleScrap(row.ID)}
+                        >
+                            <DeleteIcon />
                         </StyledIconButton>
-                    )
+                    ) : null,
                 };
             });
+
             setRows(formattedData);
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
-                setSnackbarMessage("Formulário não encontrado.");
+                setSnackbarMessage('Formulário não encontrado.');
                 setSnackbarSeverity('warning');
                 setSnackbarOpen(true);
             } else {
-                console.error("Erro ao buscar dados:", error);
-                setSnackbarMessage("Ocorreu um erro ao carregar os dados");
+                console.error('Erro ao buscar dados:', error);
+                setSnackbarMessage('Ocorreu um erro ao carregar os dados');
                 setSnackbarSeverity('error');
                 setSnackbarOpen(true);
             }
         }
     };
 
-
     const deleScrap = async (id: number) => {
         try {
-            await axios.delete(`http://localhost:5000/api/auth/delete_scrap/${id}`);
-            setRows(prevRows => prevRows.filter(row => row.ID !== id));
-            setSnackbarMessage("Registro deletado com sucesso");
+            await api.delete(`/auth/delete_scrap/${id}`);
+            setSnackbarMessage('Registro deletado com sucesso');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
+            listScrap();
         } catch (error) {
-            console.error("Erro ao deletar o registro:", error);
-            setSnackbarMessage("Ocorreu um erro ao deletar o registro");
+            console.error('Erro ao deletar o registro:', error);
+            setSnackbarMessage('Ocorreu um erro ao deletar o registro');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
         }
     };
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setFormulario(event.target.value);
+    };
+
+    const handleChangeCt = (event: ChangeEvent<HTMLInputElement>) => {
+        setCt(event.target.value);
     };
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -132,7 +201,7 @@ const Scrap = () => {
                 borderRadius={2}
             >
                 <Grid>
-                    <Typography variant="h1" padding={"0 0 30px 0"} fontWeight={"bold"}>
+                    <Typography variant="h1" padding={'0 0 30px 0'} fontWeight={'bold'}>
                         Apontamento de scrap
                     </Typography>
                 </Grid>
@@ -143,10 +212,10 @@ const Scrap = () => {
                         md={3}
                         sx={{
                             marginBottom: { xs: 2, md: 0 },
-                            display: "flex",
-                            flexDirection: "column",
+                            display: 'flex',
+                            flexDirection: 'column',
                             gap: 2,
-                            justifyContent: "space-between"
+                            justifyContent: 'space-between',
                         }}
                     >
                         <StyledButton variant="contained">Novo formulário</StyledButton>
@@ -154,74 +223,72 @@ const Scrap = () => {
                             required
                             id="outlined-required"
                             label="Formulário"
-                            fullWidth
                             onChange={handleChange}
                             onKeyPress={handleKeyPress}
                         />
-                        <Box gap={2} display={"flex"} >
+                        <Box gap={2} display={'flex'}>
                             <TextField
+                                id="outlined-select-ct"
                                 required
-                                id="outlined-required"
+                                select
                                 label="CT"
+                                value={ct}
+                                onChange={handleChangeCt}
                                 sx={{ width: 1 / 2 }}
-                            />
+                            >
+                                {ctOptions.map(ctOption => (
+                                    <MenuItem key={ctOption} value={ctOption}>{ctOption}</MenuItem>
+                                ))}
+                            </TextField>
                             <TextField
+                                id="outlined-select-maquina"
                                 required
-                                id="outlined-required"
-                                label="Maquina"
+                                select
+                                label="Maq."
+                                defaultValue=""
                                 sx={{ width: 1 / 2 }}
-                            />
+                            >
+                                {maquinaOptions.map(maquina => (
+                                    <MenuItem key={maquina} value={maquina}>{maquina}</MenuItem>
+                                ))}
+                            </TextField>
                         </Box>
-
-                        <TextField
-                            required
-                            id="outlined-required"
-                            label="Data"
-                            fullWidth
-                        />
-                        <TextField
-                            required
-                            id="outlined-required"
-                            label="Registro"
-                            fullWidth
-                        />
-                        <TextField
-                            required
-                            id="outlined-required"
-                            label="Partnumber"
-                            fullWidth
-                        />
-                        <TextField
-                            required
-                            id="outlined-required"
-                            label="Turno"
-                            fullWidth
-                        />
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+                            <DatePicker
+                                label="Data"
+                                value={selectedDate}
+                                onChange={(newValue) => setSelectedDate(newValue)}
+                            />
+                        </LocalizationProvider>
+                        <TextField required id="outlined-required" label="Registro" />
+                        <TextField required id="outlined-required" label="Partnumber" />
+                        <TextField id="outlined-select-currency" select label="Turno" defaultValue="1">
+                            <MenuItem value="1">1</MenuItem>
+                            <MenuItem value="2">2</MenuItem>
+                            <MenuItem value="3">3</MenuItem>
+                        </TextField>
                         <TextField
                             required
                             id="outlined-required"
                             label="Quantidade"
-                            fullWidth
+                            type="number"
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start">kg</InputAdornment>,
+                            }}
                         />
-                        <TextField
-                            required
-                            id="outlined-required"
-                            label="Código de Scrap"
-                            fullWidth
-                        />
+                        <TextField required id="outlined-required" label="Código de Scrap" />
                         <TextField
                             required
                             id="outlined-required"
                             label="Cartão Vermelho"
-                            fullWidth
+                            sx={{ display: status !== 'CRIADO' ? 'none' : 'block' }}
                         />
-                        <TextField
-                            required
-                            id="outlined-required"
-                            label="Material de Limpeza"
-                            fullWidth
-                        />
-                        <StyledButton variant="contained">Apontar</StyledButton>
+                        <TextField required id="outlined-required" label="Material de Limpeza" />
+
+                        <StyledButton
+                            variant="contained"
+                            disabled={rows.length > 0 && status !== 'CRIADO' || fixedformulario === ''}
+                        >Apontar</StyledButton>
                     </Grid>
                     <Grid
                         item
@@ -248,19 +315,43 @@ const Scrap = () => {
                         >
                             <Box width={"100%"}>
                                 <Typography variant="h5" component="div">
-                                    <strong>Formulário -</strong> {fixedformulario}
+                                    <strong>FORMULÁRIO: </strong> {fixedformulario}
                                 </Typography>
-                                <Typography variant="h6" component="div">
-                                    <strong>Status - </strong>{rows.length > 0 && rows[0].STATUS}
+                                <Typography variant="inherit" component="div">
+                                    {rows.length > 0 && (
+                                        <span
+                                            style={{
+                                                color: status === 'CRIADO'
+                                                    ? theme.palette.warning.main
+                                                    : status === 'ENVIADO'
+                                                        ? theme.palette.info.main
+                                                        : status === 'APROVADO'
+                                                            ? theme.palette.success.main
+                                                            : 'inherit'
+                                            }}
+                                        >
+                                            {status}
+                                        </span>
+                                    )}
                                 </Typography>
                             </Box>
-                            <Box width={"100%"}>
+                            <Box>
                                 <TextField
-                                    required
-                                    id="outlined-required"
+                                    id="outlined-select-currency"
+                                    select
                                     label="Aprovador"
-                                    fullWidth
-                                />
+                                    value={aprovador === null ? 0 : aprovador}
+                                    onChange={(event) => setAprovador(parseInt(event.target.value, 10))}
+                                    disabled={rows.length > 0 && status !== 'CRIADO' || fixedformulario === ''}
+                                    sx={{ minWidth: 130 }}
+                                >
+                                    <MenuItem value={1839}>ROBSON</MenuItem>
+                                    <MenuItem disabled value={534}>ELCIO</MenuItem>
+                                    <MenuItem disabled value={2342}>HUMBERTO</MenuItem>
+                                    <MenuItem disabled value={2074}>ELLEN</MenuItem>
+                                    <MenuItem disabled value={2809}>ZOLTAN</MenuItem>
+                                    <MenuItem disabled value={1836}>LEANDRO</MenuItem>
+                                </TextField>
                             </Box>
                         </Box>
                         <Box

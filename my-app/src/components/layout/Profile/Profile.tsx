@@ -1,14 +1,15 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
+import Logout from '@mui/icons-material/Logout';
 import Avatar from '@mui/material/Avatar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
+import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
-import Logout from '@mui/icons-material/Logout';
+import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../../config/axiosConfig';
 
 export default function AccountMenu() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -31,23 +32,15 @@ export default function AccountMenu() {
     React.useEffect(() => {
         async function fetchUserName() {
             try {
-                const response = await fetch('http://localhost:5000/api/auth/user_nome', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username: localStorage.getItem('username') || 'Usuário' }),
+                const response = await api.post('/auth/user_nome', {
+                    username: localStorage.getItem('username')
                 });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
-                setUserNome(data.toUpperCase());
+                setUserNome(response.data.toUpperCase());
             } catch (error) {
                 console.error('Erro ao buscar o nome do usuário:', error);
             }
         }
-           
+
         fetchUserName();
     }, []);
 

@@ -3,12 +3,15 @@ const { login } = require('../controllers/authController');
 const { list_form_scrap } = require('../api/Scrap/listScrap');
 const { delete_scrap } = require('../api/Scrap/deleteScrap');
 const { user_nome } = require('../api/User/nameUser');
+const { list_linha } = require('../api/Linha/listLinha');
 const authenticateToken = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.post('/login', login);
 router.post('/list_form_scrap', list_form_scrap);
 router.post('/user_nome', user_nome);
+
+router.post('/list_linha', list_linha);
 
 router.delete('/delete_scrap/:id', delete_scrap);
 

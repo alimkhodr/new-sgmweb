@@ -8,12 +8,13 @@ const list_form_scrap = async (req, res) => {
         const result = await pool.request()
             .input('formulario', formulario)
             .query(`SELECT RSCP_CODIGO AS 'ID', RSCP_PART_NUMBER AS 'PN',  CONVERT(varchar(10),RSCP_QUANTIDADE) + ' (' + CONVERT(varchar(5),RSCP_MEDIDA) + ')' AS 'QTD', 
-                    CONVERT(VARCHAR, RSCP_MAQUINA + RSCP_CT) AS 'CT/MAQ', CONVERT(DATE, RSCP_DATA) AS 'DATA', RSCP_REGISTRO AS 'REGISTRO', RSCP_CARTAO AS 'CARTÃO', RSCP_LIMPEZA AS 'LIMPEZA', RSCP_APROVACAO AS 'APROVACAO' 
-                    FROM RELATORIO_SCRAP WHERE RSCP_CONTROLE = @formulario`);
+                    CONVERT(VARCHAR, RSCP_MAQUINA + RSCP_CT) AS 'CT/MAQ', CONVERT(DATE, RSCP_DATA) AS 'DATA', RSCP_REGISTRO AS 'REGISTRO', RSCP_CARTAO AS 'CARTÃO', RSCP_LIMPEZA AS 'LIMPEZA', FSCR_STATUS AS 'STATUS' , FSCR_APROVADOR AS 'APROVADOR' 
+                    FROM RELATORIO_SCRAP LEFT JOIN FORMULARIO_SCRAP ON FSCR_FORMULARIO = RSCP_CONTROLE WHERE RSCP_CONTROLE = @formulario`);
 
         const formattedData = result.recordset.map(row => ({
             ...row,
-            STATUS: row.APROVACAO === 1 ? 'Em andamento' : 'Aprovado'
+            STATUS: row.STATUS,
+            APROVADOR: row.APROVADOR
         }));
 
         const columns = result.recordset.length > 0
