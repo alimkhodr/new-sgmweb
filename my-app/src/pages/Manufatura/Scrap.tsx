@@ -15,6 +15,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/pt-br';
 import { ChangeEvent, useEffect, useState } from 'react';
 import React from 'react';
+import AddIcon from '@mui/icons-material/Add';
 
 interface Data {
     [key: string]: any;
@@ -53,13 +54,13 @@ const Scrap = () => {
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
     const [ctOptions, setCtOptions] = useState<string[]>([]);
     const [maquinaOptions, setMaquinaOptions] = useState<string[]>([]);
+    const [isLoading, setLoadingForm] = React.useState(false);
 
     useEffect(() => {
         fetchCtMaquinaOptions();
     }, []);
 
     useEffect(() => {
-        // Atualiza as opções de Máquinas quando o CT é alterado
         if (ct) {
             fetchMaquinasByCt();
         }
@@ -89,6 +90,31 @@ const Scrap = () => {
         }
     };
 
+    const createNewForm = async () => {
+        try {
+            setLoadingForm(true);
+            const response = await api.post('/auth/createNewForm', { user: localStorage.getItem('username') });
+
+            if (response.status === 201 && response.data && response.data.formId) {
+                const newFormId = response.data.formId;
+                setSnackbarMessage('Novo formulário criado com sucesso.');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
+
+                setfixedformulario(newFormId);
+                setFormulario(newFormId);
+                setStatus("CRIADO");
+            }
+        } catch (error) {
+            console.error('Erro ao criar novo formulário:', error);
+            setSnackbarMessage('Erro ao criar novo formulário.');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+        } finally {
+            setLoadingForm(false);
+        }
+    };
+
     const fetchMaquinasByCt = async () => {
         try {
             const response = await api.post('/auth/list_linha', { ct });
@@ -108,7 +134,9 @@ const Scrap = () => {
     const listScrap = async (event?: React.FormEvent) => {
         if (event) event.preventDefault();
 
-        if (!formulario.trim()) {
+        const formularioStr = String(formulario).trim();
+
+        if (!formularioStr) {
             setSnackbarMessage('O campo formulário não pode estar vazio.');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
@@ -116,7 +144,7 @@ const Scrap = () => {
         }
 
         try {
-            const response = await api.post<{ data: Data[] }>('/auth/list_form_scrap', { formulario });
+            const response = await api.post<{ data: Data[] }>('/auth/list_form_scrap', { formulario: formularioStr });
 
             if (response.status === 200 && response.data.data.length === 0) {
                 setSnackbarMessage('Formulário não encontrado.');
@@ -126,13 +154,15 @@ const Scrap = () => {
             }
 
             const formattedData = response.data.data.map(row => {
-                setfixedformulario(formulario);
+                const data = row.DATA ? row.DATA.split('T')[0] : 'N/A';
+
+                setfixedformulario(formularioStr);
                 setAprovador(row.APROVADOR === null ? 0 : row.APROVADOR);
                 setStatus(row.STATUS);
 
                 return {
                     ...row,
-                    DATA: row.DATA.split('T')[0],
+                    DATA: data,
                     DELETAR: row.STATUS === 'CRIADO' ? (
                         <StyledIconButton
                             aria-label="delete"
@@ -218,11 +248,20 @@ const Scrap = () => {
                             justifyContent: 'space-between',
                         }}
                     >
-                        <StyledButton variant="contained">Novo formulário</StyledButton>
+                        <StyledButton
+                            onClick={createNewForm}
+                            loading={isLoading}
+                            startIcon={<AddIcon />}
+                            loadingPosition="end"
+                            variant="contained"
+                        >
+                            Novo formulário
+                        </StyledButton>
                         <TextField
                             required
                             id="outlined-required"
                             label="Formulário"
+                            value={formulario}
                             onChange={handleChange}
                             onKeyPress={handleKeyPress}
                         />
@@ -318,7 +357,7 @@ const Scrap = () => {
                                     <strong>FORMULÁRIO: </strong> {fixedformulario}
                                 </Typography>
                                 <Typography variant="inherit" component="div">
-                                    {rows.length > 0 && (
+                                    {fixedformulario && (
                                         <span
                                             style={{
                                                 color: status === 'CRIADO'
