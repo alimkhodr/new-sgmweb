@@ -17,7 +17,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
-
+    const [error, serError] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
@@ -49,6 +49,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
             setSnackbarMessage("Usuário ou senha incorreto");
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
+            serError(true)
         }
     };
 
@@ -65,6 +66,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
                             variant="outlined"
                             fullWidth
                             margin="none"
+                            error = {error}
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
@@ -85,6 +87,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
                                         </IconButton>
                                     </InputAdornment>
                                 }
+                                error = {error}
                                 label="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}

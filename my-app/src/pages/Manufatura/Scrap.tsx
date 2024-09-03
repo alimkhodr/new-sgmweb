@@ -49,12 +49,14 @@ const Scrap = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
-    const [aprovador, setAprovador] = useState<number>();
+    const [aprovador, setAprovador] = useState<number>(1839);
     const [status, setStatus] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
     const [ctOptions, setCtOptions] = useState<string[]>([]);
     const [maquinaOptions, setMaquinaOptions] = useState<string[]>([]);
     const [isLoading, setLoadingForm] = React.useState(false);
+    const [statusReg, SetStatusReg] = useState(false);
+    const [registro, SetReg] = useState<string>('');
 
     useEffect(() => {
         fetchCtMaquinaOptions();
@@ -87,6 +89,20 @@ const Scrap = () => {
             }
         } catch (error) {
             console.error('Erro ao buscar opções de CT e MAQUINA:', error);
+        }
+    };
+
+    const checkRegistro = async () => {
+        try {
+            const response = await api.post('/auth/checkUser', { username: registro });
+            if (response.status === 200) {
+                SetStatusReg(false);
+            }
+            else {
+                SetStatusReg(true);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar o nome do usuário:', error);
         }
     };
 
@@ -157,7 +173,7 @@ const Scrap = () => {
                 const data = row.DATA ? row.DATA.split('T')[0] : 'N/A';
 
                 setfixedformulario(formularioStr);
-                setAprovador(row.APROVADOR === null ? 0 : row.APROVADOR);
+                setAprovador(row.APROVADOR === null ? 1839 : row.APROVADOR);
                 setStatus(row.STATUS);
 
                 return {
@@ -212,11 +228,20 @@ const Scrap = () => {
         setCt(event.target.value);
     };
 
+    const handleChangeReg = (event: ChangeEvent<HTMLInputElement>) => {
+        SetReg(event.target.value);
+    };
+
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             listScrap();
         }
     };
+
+    const handleCheckUser = () => {
+        checkRegistro();
+    };
+
 
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
@@ -297,9 +322,17 @@ const Scrap = () => {
                                 label="Data"
                                 value={selectedDate}
                                 onChange={(newValue) => setSelectedDate(newValue)}
+                                maxDate={dayjs()}
                             />
                         </LocalizationProvider>
-                        <TextField required id="outlined-required" label="Registro" />
+                        <TextField
+                            required
+                            id="outlined-required"
+                            label="Registro"
+                            error={statusReg}
+                            onChange={handleChangeReg}
+                            onBlur={handleCheckUser}
+                        />
                         <TextField required id="outlined-required" label="Partnumber" />
                         <TextField id="outlined-select-currency" select label="Turno" defaultValue="1">
                             <MenuItem value="1">1</MenuItem>
@@ -313,6 +346,7 @@ const Scrap = () => {
                             type="number"
                             InputProps={{
                                 startAdornment: <InputAdornment position="start">kg</InputAdornment>,
+                                inputProps: { min: 0, step: 1 },
                             }}
                         />
                         <TextField required id="outlined-required" label="Código de Scrap" />
@@ -350,13 +384,13 @@ const Scrap = () => {
                                 border: `1px solid ${theme.palette.grey[400]}`,
                                 borderRadius: "5px",
                             }}
-                            gap={1}
+                            gap={2}
                         >
                             <Box width={"100%"}>
                                 <Typography variant="h5" component="div">
                                     <strong>FORMULÁRIO: </strong> {fixedformulario}
                                 </Typography>
-                                <Typography variant="inherit" component="div">
+                                <Typography variant="h6" component="div">
                                     {fixedformulario && (
                                         <span
                                             style={{
@@ -382,7 +416,7 @@ const Scrap = () => {
                                     value={aprovador === null ? 0 : aprovador}
                                     onChange={(event) => setAprovador(parseInt(event.target.value, 10))}
                                     disabled={rows.length > 0 && status !== 'CRIADO' || fixedformulario === ''}
-                                    sx={{ minWidth: 130 }}
+                                    sx={{ minWidth: 130}}
                                 >
                                     <MenuItem value={1839}>ROBSON</MenuItem>
                                     <MenuItem disabled value={534}>ELCIO</MenuItem>
@@ -392,6 +426,12 @@ const Scrap = () => {
                                     <MenuItem disabled value={1836}>LEANDRO</MenuItem>
                                 </TextField>
                             </Box>
+                            <StyledButton
+                                variant="contained"
+                                disabled={rows.length > 0 && status !== 'CRIADO' || fixedformulario === ''}
+                            >
+                                Enviar
+                            </StyledButton>
                         </Box>
                         <Box
                             sx={{

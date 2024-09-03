@@ -9,7 +9,7 @@ const login = async (req, res) => {
         const pool = await poolPromise;
         const result = await pool.request()
             .input('username', username)
-            .query('SELECT * FROM FUNCIONARIO WHERE FUN_REGISTRO = @username');
+            .query(`SELECT * FROM FUNCIONARIO WHERE FUN_REGISTRO = @username AND FUN_STATUS = 'ATIVO'`);
 
         if (result.recordset.length === 0) {
             return res.status(401).send('Usuário não encontrado');
