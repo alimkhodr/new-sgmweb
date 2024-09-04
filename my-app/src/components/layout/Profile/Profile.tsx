@@ -10,19 +10,19 @@ import Tooltip from '@mui/material/Tooltip';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../config/axiosConfig';
+import { Typography } from '@mui/material';
 
 export default function AccountMenu() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const navigate = useNavigate();
     const [userNome, setUserNome] = React.useState('Usuário');
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-    
+    const [userFuncao, setUserFuncao] = React.useState('Área');
+    const [username] = React.useState(localStorage.getItem('username'));
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {setAnchorEl(event.currentTarget);};
+    const handleClose = () => {setAnchorEl(null);};
+    const token = localStorage.getItem('token');
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
@@ -30,19 +30,29 @@ export default function AccountMenu() {
     };
 
     React.useEffect(() => {
-        async function fetchUserName() {
-            try {
-                const response = await api.post('/auth/user_nome', {
-                    username: localStorage.getItem('username')
-                });
-                setUserNome(response.data.toUpperCase());
-            } catch (error) {
-                console.error('Erro ao buscar o nome do usuário:', error);
+        if (username) {
+            async function fetchUserName() {
+                try {
+                    const response = await api.get('/auth/user_data', {
+                        params: { username },
+                        headers: {Authorization: `Bearer ${token}`}
+                    });
+                    const row = response.data;
+                    if (row && row.FUN_NOME) {
+                        setUserNome(row.FUN_NOME.toUpperCase());
+                        setUserFuncao(row.FUN_FUNCAO.toUpperCase());
+                    }
+                    else {
+                        console.error('Erro ao buscar o nome do usuário:');
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar o nome do usuário:', error);
+                }
             }
-        }
 
-        fetchUserName();
-    }, []);
+            fetchUserName();
+        }
+    }, [username]);
 
     const firstLetter = userNome && userNome[0].toUpperCase();
 
@@ -53,7 +63,7 @@ export default function AccountMenu() {
                     <IconButton
                         onClick={handleClick}
                         size="small"
-                        sx={{ ml: 2}}
+                        sx={{ ml: 2 }}
                         aria-controls={open ? 'account-menu' : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
@@ -98,7 +108,15 @@ export default function AccountMenu() {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
                 <MenuItem>
-                    <Avatar>{firstLetter}</Avatar>{userNome}
+                    <Avatar >{firstLetter}</Avatar>
+                    <Box display={'flex'} flexDirection={'column'}>
+                        <Typography variant="subtitle1" lineHeight={1.5}>
+                            {userNome}
+                        </Typography>
+                        <Typography variant="caption" lineHeight={1} fontSize={10}>
+                            {userFuncao}
+                        </Typography>
+                    </Box>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleLogout}>

@@ -21,9 +21,8 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
-    const handleCloseSnackbar = () => {
-        setSnackbarOpen(false);
-    };
+    const handleCloseSnackbar = () => {setSnackbarOpen(false);};
+    const token = localStorage.getItem('token');
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -35,9 +34,9 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
         event.preventDefault();
 
         try {
-            const response = await api .post('/auth/login', {
-                username,
-                password
+            const response = await api.get('/auth/login', {
+                params: { username, password },
+                headers: { Authorization: `Bearer ${token}` }
             });
 
             localStorage.setItem('token', response.data.token);
@@ -57,7 +56,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
 
     return (
         <Box sx={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Box component="main" sx={{ p: 5, gap: 4, m: 5, display: "flex", alignItems: "center", justifyContent: "center", flexDirection:"column"}} bgcolor={theme.palette.background.paper} borderRadius={5}>
+            <Box component="main" sx={{ p: 5, gap: 4, m: 5, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }} bgcolor={theme.palette.background.paper} borderRadius={5}>
                 <img src={SGM} alt="SGM" style={{ height: "130px" }} />
                 <form onSubmit={handleSubmit}>
                     <Box gap={2} display={'flex'} flexDirection={'column'}>
@@ -66,7 +65,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
                             variant="outlined"
                             fullWidth
                             margin="none"
-                            error = {error}
+                            error={error}
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
@@ -87,7 +86,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
                                         </IconButton>
                                     </InputAdornment>
                                 }
-                                error = {error}
+                                error={error}
                                 label="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}

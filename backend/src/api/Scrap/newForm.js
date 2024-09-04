@@ -2,7 +2,7 @@ const { poolPromise } = require('../../config/dbConfig');
 
 const createNewForm = async (req, res) => {
     try {
-        const user = req.body.user;
+        const user = req.query.user;
 
         if (!user) {
             return res.status(400).send('O usuário deve ser fornecido.');

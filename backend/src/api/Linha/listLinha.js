@@ -1,7 +1,7 @@
 const { poolPromise } = require('../../config/dbConfig');
 
 const list_linha = async (req, res) => {
-    const { ct } = req.body;
+    const { ct } = req.query;
 
     try {
         const pool = await poolPromise;

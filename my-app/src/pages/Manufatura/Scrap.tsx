@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {
-    Container, Grid, Typography, TextField, IconButton, Box, styled, MenuItem, InputAdornment
+    Container, Grid, Typography, TextField, IconButton, Box, MenuItem, InputAdornment
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VirtualizedTable from '../../components/Tables/VirtualizedTable/VirtualizedTable';
@@ -21,13 +21,7 @@ interface Data {
     [key: string]: any;
 }
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-    padding: '4px',
-    '&:hover': {
-        color: theme.palette.error.main,
-    },
-}));
-
+//COLUNAS
 const predefinedColumns = [
     { width: 50, label: 'ID', dataKey: 'ID' },
     { width: 80, label: 'PN', dataKey: 'PN' },
@@ -41,6 +35,7 @@ const predefinedColumns = [
 ];
 
 const Scrap = () => {
+    //CONSTANTES
     const [columns] = useState(predefinedColumns);
     const [rows, setRows] = useState<Data[]>([]);
     const [formulario, setFormulario] = useState<string>('');
@@ -57,7 +52,9 @@ const Scrap = () => {
     const [isLoading, setLoadingForm] = React.useState(false);
     const [statusReg, SetStatusReg] = useState(false);
     const [registro, SetReg] = useState<string>('');
+    const token = localStorage.getItem('token');
 
+    //useEffects
     useEffect(() => {
         fetchCtMaquinaOptions();
     }, []);
@@ -68,9 +65,19 @@ const Scrap = () => {
         }
     }, [ct]);
 
+    useEffect(() => {
+        if (fixedformulario) {
+            listScrap();
+        }
+    }, [fixedformulario]);
+
+
     const fetchCtMaquinaOptions = async () => {
         try {
-            const response = await api.post('/auth/list_linha', { ct: '' });
+            const response = await api.get('/auth/list_linha', { 
+                params: { ct: '' } ,
+                headers: {Authorization: `Bearer ${token}`}
+            });
             const { data } = response;
             const ctSet = new Set<string>();
             const maquinaSet = new Set<string>();
@@ -92,48 +99,10 @@ const Scrap = () => {
         }
     };
 
-    const checkRegistro = async () => {
-        try {
-            const response = await api.post('/auth/checkUser', { username: registro });
-            if (response.status === 200) {
-                SetStatusReg(false);
-            }
-            else {
-                SetStatusReg(true);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar o nome do usuário:', error);
-        }
-    };
-
-    const createNewForm = async () => {
-        try {
-            setLoadingForm(true);
-            const response = await api.post('/auth/createNewForm', { user: localStorage.getItem('username') });
-
-            if (response.status === 201 && response.data && response.data.formId) {
-                const newFormId = response.data.formId;
-                setSnackbarMessage('Novo formulário criado com sucesso.');
-                setSnackbarSeverity('success');
-                setSnackbarOpen(true);
-
-                setfixedformulario(newFormId);
-                setFormulario(newFormId);
-                setStatus("CRIADO");
-            }
-        } catch (error) {
-            console.error('Erro ao criar novo formulário:', error);
-            setSnackbarMessage('Erro ao criar novo formulário.');
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
-        } finally {
-            setLoadingForm(false);
-        }
-    };
-
+    //PREENCHER MAQUINAS POR CT
     const fetchMaquinasByCt = async () => {
         try {
-            const response = await api.post('/auth/list_linha', { ct });
+            const response = await api.get('/auth/list_linha', { params: { ct } });
             const { data } = response;
             const maquinaSet = new Set<string>();
 
@@ -147,12 +116,59 @@ const Scrap = () => {
         }
     };
 
+    //VALIDAR REGISTRO
+    const checkRegistro = async () => {
+        try {
+            const response = await api.get('/auth/checkUser', { 
+                params: { username: registro },
+                headers: {Authorization: `Bearer ${token}`}
+            });
+            if (response.status === 200) {
+                SetStatusReg(false);
+            }
+            else {
+                SetStatusReg(true);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar o nome do usuário:', error);
+        }
+    };
+
+    //CRIAR NOVO FORMULARIO
+    const createNewForm = async () => {
+        try {
+            setLoadingForm(true);
+            const response = await api.get('/auth/createNewForm', { 
+                params: { user: localStorage.getItem('username') },
+                headers: {Authorization: `Bearer ${token}`}
+            });
+
+            if (response.status === 201 && response.data && response.data.formId) {
+                const newFormId = response.data.formId;
+                setSnackbarMessage('Novo formulário criado com sucesso.');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
+
+                setfixedformulario(newFormId);
+                setFormulario(newFormId);
+            }
+        } catch (error) {
+            console.error('Erro ao criar novo formulário:', error);
+            setSnackbarMessage('Erro ao criar novo formulário.');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+        } finally {
+            setLoadingForm(false);
+        }
+    };
+
+    //LISTAR FORMULARIO
     const listScrap = async (event?: React.FormEvent) => {
         if (event) event.preventDefault();
 
         const formularioStr = String(formulario).trim();
 
-        if (!formularioStr) {
+        if (!formularioStr && !fixedformulario) {
             setSnackbarMessage('O campo formulário não pode estar vazio.');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
@@ -160,7 +176,10 @@ const Scrap = () => {
         }
 
         try {
-            const response = await api.post<{ data: Data[] }>('/auth/list_form_scrap', { formulario: formularioStr });
+            const response = await api.get<{ data: Data[] }>('/auth/list_form_scrap', { 
+                params: { formulario: formularioStr || fixedformulario },
+                headers: {Authorization: `Bearer ${token}`}
+            });
 
             if (response.status === 200 && response.data.data.length === 0) {
                 setSnackbarMessage('Formulário não encontrado.');
@@ -169,26 +188,31 @@ const Scrap = () => {
                 return;
             }
 
-            const formattedData = response.data.data.map(row => {
-                const data = row.DATA ? row.DATA.split('T')[0] : 'N/A';
+            const formattedData = response.data.data
+                .map(row => {
+                    const data = row.DATA ? row.DATA.split('T')[0] : null;
 
-                setfixedformulario(formularioStr);
-                setAprovador(row.APROVADOR === null ? 1839 : row.APROVADOR);
-                setStatus(row.STATUS);
+                    setAprovador(row.APROVADOR === null ? 1839 : row.APROVADOR);
+                    setStatus(row.STATUS);
+                    setfixedformulario(row.FORMULARIO);
 
-                return {
-                    ...row,
-                    DATA: data,
-                    DELETAR: row.STATUS === 'CRIADO' ? (
-                        <StyledIconButton
-                            aria-label="delete"
-                            onClick={() => deleScrap(row.ID)}
-                        >
-                            <DeleteIcon />
-                        </StyledIconButton>
-                    ) : null,
-                };
-            });
+                    if (row.ID != null) {
+                        return {
+                            ...row,
+                            DATA: data,
+                            DELETAR: row.STATUS === 'CRIADO' ? (
+                                <IconButton
+                                    aria-label="delete"
+                                    onClick={() => deleScrap(row.ID)}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            ) : null,
+                        };
+                    }
+                    return null;
+                })
+                .filter(row => row !== null);
 
             setRows(formattedData);
         } catch (error) {
@@ -205,6 +229,7 @@ const Scrap = () => {
         }
     };
 
+    //DELETAR LINHA
     const deleScrap = async (id: number) => {
         try {
             await api.delete(`/auth/delete_scrap/${id}`);
@@ -220,33 +245,35 @@ const Scrap = () => {
         }
     };
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    //AÇÕES
+    const ChangeForm = (event: ChangeEvent<HTMLInputElement>) => {
         setFormulario(event.target.value);
     };
 
-    const handleChangeCt = (event: ChangeEvent<HTMLInputElement>) => {
+    const ChangeCt = (event: ChangeEvent<HTMLInputElement>) => {
         setCt(event.target.value);
     };
 
-    const handleChangeReg = (event: ChangeEvent<HTMLInputElement>) => {
+    const ChangeReg = (event: ChangeEvent<HTMLInputElement>) => {
         SetReg(event.target.value);
     };
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const KeyPressForm = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             listScrap();
         }
     };
 
-    const handleCheckUser = () => {
+    const BlurReg = () => {
         checkRegistro();
     };
 
-
-    const handleCloseSnackbar = () => {
+    const CloseSnackbar = () => {
         setSnackbarOpen(false);
     };
+    //AÇÕES
 
+    //DESIGN
     return (
         <Container>
             <Grid
@@ -287,8 +314,8 @@ const Scrap = () => {
                             id="outlined-required"
                             label="Formulário"
                             value={formulario}
-                            onChange={handleChange}
-                            onKeyPress={handleKeyPress}
+                            onChange={ChangeForm}
+                            onKeyPress={KeyPressForm}
                         />
                         <Box gap={2} display={'flex'}>
                             <TextField
@@ -297,7 +324,7 @@ const Scrap = () => {
                                 select
                                 label="CT"
                                 value={ct}
-                                onChange={handleChangeCt}
+                                onChange={ChangeCt}
                                 sx={{ width: 1 / 2 }}
                             >
                                 {ctOptions.map(ctOption => (
@@ -330,8 +357,8 @@ const Scrap = () => {
                             id="outlined-required"
                             label="Registro"
                             error={statusReg}
-                            onChange={handleChangeReg}
-                            onBlur={handleCheckUser}
+                            onChange={ChangeReg}
+                            onBlur={BlurReg}
                         />
                         <TextField required id="outlined-required" label="Partnumber" />
                         <TextField id="outlined-select-currency" select label="Turno" defaultValue="1">
@@ -354,7 +381,7 @@ const Scrap = () => {
                             required
                             id="outlined-required"
                             label="Cartão Vermelho"
-                            sx={{ display: status !== 'CRIADO' ? 'none' : 'block' }}
+                            sx={{ display: status !== 'CRIADO' ? 'none' : 'flex' }}
                         />
                         <TextField required id="outlined-required" label="Material de Limpeza" />
 
@@ -416,7 +443,7 @@ const Scrap = () => {
                                     value={aprovador === null ? 0 : aprovador}
                                     onChange={(event) => setAprovador(parseInt(event.target.value, 10))}
                                     disabled={rows.length > 0 && status !== 'CRIADO' || fixedformulario === ''}
-                                    sx={{ minWidth: 130}}
+                                    sx={{ minWidth: 130 }}
                                 >
                                     <MenuItem value={1839}>ROBSON</MenuItem>
                                     <MenuItem disabled value={534}>ELCIO</MenuItem>
@@ -428,7 +455,7 @@ const Scrap = () => {
                             </Box>
                             <StyledButton
                                 variant="contained"
-                                disabled={rows.length > 0 && status !== 'CRIADO' || fixedformulario === ''}
+                                disabled={rows.length <= 0 || status !== 'CRIADO' || fixedformulario === ''}
                             >
                                 Enviar
                             </StyledButton>
@@ -446,7 +473,7 @@ const Scrap = () => {
             </Grid>
             <Alert
                 open={snackbarOpen}
-                handleClose={handleCloseSnackbar}
+                handleClose={CloseSnackbar}
                 message={snackbarMessage}
                 severity={snackbarSeverity}
             />

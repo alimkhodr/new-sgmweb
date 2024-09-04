@@ -83,132 +83,136 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 export default function Sidebar() {
-    const theme = useTheme();
-    const navigate = useNavigate();
-    const [open, setOpen] = React.useState(false);
-    const [openSubmenu, setOpenSubmenu] = React.useState<string | null>(null);
-    const [telas, setTelas] = useState<number[]>([]);
-    const [menuItems, setMenuItems] = useState(menuConfig);
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+  const [openSubmenu, setOpenSubmenu] = React.useState<string | null>(null);
+  const [telas, setTelas] = useState<number[]>([]);
+  const [menuItems, setMenuItems] = useState(menuConfig);
+  const token = localStorage.getItem('token');
   
-    useEffect(() => {
-      const fetchTelas = async () => {
-        try {
-          const response = await api.post('/auth/ace_telas', { username: localStorage.getItem('username') });
-          setTelas(response.data.map((tela: string) => parseInt(tela, 10)));
-        } catch (error) {
-          console.error('Erro ao buscar telas:', error);
-        }
-      };
-  
-      fetchTelas();
-    }, []);
-  
-    useEffect(() => {
-        const filteredMenu = menuConfig.map((menu) => ({
-          ...menu,
-          subItems: 
-            telas.includes(99) ? menu.subItems : menu.subItems.filter((subItem) => telas.includes(subItem.telaId)),
-        })).filter((menu) => menu.subItems.length > 0);
-      
-        setMenuItems(filteredMenu);
-      }, [telas]);
-
-    const handleDrawerOpen = () => {
-      setOpen(true);
-    };
-  
-    const handleDrawerClose = () => {
-      setOpen(false);
-      setOpenSubmenu(null);
-    };
-  
-    const handleSubmenuClick = (item: string) => {
-      setOpenSubmenu(openSubmenu === item ? null : item);
-      if (!open) {
-        setOpen(true);
-      }
-    };
-  
-    const handleNavigation = (route: string) => {
+  useEffect(() => {
+    const fetchTelas = async () => {
       try {
-        navigate(route);
+        const response = await api.get('/auth/ace_telas', {
+          params: { username: localStorage.getItem('username') },
+          headers: {Authorization: `Bearer ${token}`}
+        });
+        setTelas(response.data.map((tela: string) => parseInt(tela, 10)));
       } catch (error) {
-        <Alert severity="error">Não foi possível realizar a navegação.</Alert>;
+        console.error('Erro ao buscar telas:', error);
       }
     };
-  
-    return (
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        <AppBar position="fixed" open={open}>
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              sx={{
-                marginRight: 5,
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <img src={Logo} alt="Logo" style={{ height: "40px", marginRight: "10px", cursor: "pointer" }} onClick={() => navigate('/TelaInicial')} />
-            <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
-              <Profile />
-            </Box>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <DrawerHeader>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </IconButton>
-          </DrawerHeader>
-          <Divider />
-          <List>
-            {menuItems.map((item) => (
-              <React.Fragment key={item.text}>
-                <ListItem disablePadding sx={{ display: 'block' }}>
-                  <ListItemButton
-                    onClick={() => {
-                      handleSubmenuClick(item.text);
-                      if (!item.subItems || item.subItems.length === 0) {
-                        handleNavigation(item.route);
-                      }
-                    }}
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? 'initial' : 'center',
-                      px: 2.5,
-                    }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
-                    {open ? (openSubmenu === item.text ? <ExpandMore /> : <ChevronLeftIcon />) : null}
-                  </ListItemButton>
-                </ListItem>
-                {item.subItems && (
-                  <Collapse in={openSubmenu === item.text} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                      {item.subItems.map((subItem) => (
-                        <ListItemButton key={subItem.text} sx={{ pl: open ? 4 : 0 }} onClick={() => handleNavigation(subItem.route)}>
-                          <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
-                            {subItem.icon}
-                          </ListItemIcon>
-                          <ListItemText primary={subItem.text} sx={{ opacity: open ? 1 : 0 }} />
-                        </ListItemButton>
-                      ))}
-                    </List>
-                  </Collapse>
-                )}
-              </React.Fragment>
-            ))}
-          </List>
-        </Drawer>
-      </Box>
-    );
-  }
+
+    fetchTelas();
+  }, []);
+
+  useEffect(() => {
+    const filteredMenu = menuConfig.map((menu) => ({
+      ...menu,
+      subItems:
+        telas.includes(99) ? menu.subItems : menu.subItems.filter((subItem) => telas.includes(subItem.telaId)),
+    })).filter((menu) => menu.subItems.length > 0);
+
+    setMenuItems(filteredMenu);
+  }, [telas]);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+    setOpenSubmenu(null);
+  };
+
+  const handleSubmenuClick = (item: string) => {
+    setOpenSubmenu(openSubmenu === item ? null : item);
+    if (!open) {
+      setOpen(true);
+    }
+  };
+
+  const handleNavigation = (route: string) => {
+    try {
+      navigate(route);
+    } catch (error) {
+      <Alert severity="error">Não foi possível realizar a navegação.</Alert>;
+    }
+  };
+
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar position="fixed" open={open}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(open && { display: 'none' }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <img src={Logo} alt="Logo" style={{ height: "40px", marginRight: "10px", cursor: "pointer" }} onClick={() => navigate('/TelaInicial')} />
+          <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
+            <Profile />
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Drawer variant="permanent" open={open}>
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {menuItems.map((item) => (
+            <React.Fragment key={item.text}>
+              <ListItem disablePadding sx={{ display: 'block' }}>
+                <ListItemButton
+                  onClick={() => {
+                    handleSubmenuClick(item.text);
+                    if (!item.subItems || item.subItems.length === 0) {
+                      handleNavigation(item.route);
+                    }
+                  }}
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? 'initial' : 'center',
+                    px: 2.5,
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
+                  {open ? (openSubmenu === item.text ? <ExpandMore /> : <ChevronLeftIcon />) : null}
+                </ListItemButton>
+              </ListItem>
+              {item.subItems && (
+                <Collapse in={openSubmenu === item.text} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    {item.subItems.map((subItem) => (
+                      <ListItemButton key={subItem.text} sx={{ pl: open ? 4 : 0 }} onClick={() => handleNavigation(subItem.route)}>
+                        <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
+                          {subItem.icon}
+                        </ListItemIcon>
+                        <ListItemText primary={subItem.text} sx={{ opacity: open ? 1 : 0 }} />
+                      </ListItemButton>
+                    ))}
+                  </List>
+                </Collapse>
+              )}
+            </React.Fragment>
+          ))}
+        </List>
+      </Drawer>
+    </Box>
+  );
+}

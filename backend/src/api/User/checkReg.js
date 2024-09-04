@@ -1,7 +1,7 @@
 const { poolPromise } = require('../../config/dbConfig');
 
 const checkUser = async (req, res) => {
-    const username = req.body.username;
+    const username = req.query.username;
     try {
         if (!username) {
             return res.status(400).send('O nome de usuário deve ser fornecido.');

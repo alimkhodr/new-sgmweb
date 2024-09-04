@@ -1,7 +1,7 @@
 const { poolPromise } = require('../config/dbConfig');
 
 const ace_telas = async (req, res) => {
-    const username = req.body.username;
+    const username = req.query.username;
     try {
         if (!username) {
             return res.status(400).send('O usuário deve ser fornecido.');
