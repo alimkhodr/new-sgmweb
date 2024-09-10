@@ -1,7 +1,8 @@
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Box, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import Cookies from 'js-cookie'
 import SGM from '../../assets/images/logo/sgmweb.svg';
 import Alert from '../../components/Alerts/AlertSnackbar';
 import StyledButton from '../../components/StyledButton/StyledButton';
@@ -17,12 +18,12 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
-    const [error, serError] = useState(false);
+    const [error, setError] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
-    const handleCloseSnackbar = () => {setSnackbarOpen(false);};
-    const token = localStorage.getItem('token');
+
+    const handleCloseSnackbar = () => { setSnackbarOpen(false); };
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -35,12 +36,10 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
 
         try {
             const response = await api.get('/auth/login', {
-                params: { username, password },
-                headers: { Authorization: `Bearer ${token}` }
+                params: { username, password }
             });
 
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('username', username);
+            Cookies.set('token', response.data.token, { expires: 7 }); // Save token in cookie
 
             setIsAuthenticated(true);
             navigate('/TelaInicial', { replace: true });
@@ -48,11 +47,9 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
             setSnackbarMessage("Usuário ou senha incorreto");
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
-            serError(true)
+            setError(true);
         }
     };
-
-
 
     return (
         <Box sx={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>

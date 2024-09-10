@@ -1,9 +1,9 @@
-import GitHubIcon from '@mui/icons-material/GitHub';
+
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { Box, Grid, styled, Typography } from "@mui/material";
 import Logo from "../../../assets/images/logo/aptiv_logo_white.png"
 import theme from '../../../theme';
+import { SupportAgent } from '@mui/icons-material';
 
 const StyledFooter = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -27,6 +27,7 @@ const IconLink = styled("a")(() => ({
   color: theme.palette.primary.contrastText,
   borderRadius: "10px",
   padding: "5px",
+  alignItems: "center",
   display: "flex",
   transition: 'transform 0.5s',
   '&:hover': {
@@ -52,9 +53,9 @@ const Footer = () => {
             <img src={Logo} alt="Logo" style={{ height: "40px", marginRight: "10px" }} />
           </Grid>
           <Grid item xs={12} md={6} display="flex" justifyContent={{ xs: "center", md: "right" }}>
-            <Box display="flex" justifyContent="center"  textAlign="center" flexDirection={{ xs: "column", md: "row" }}>
+            <Box display="flex" justifyContent="center" textAlign="center" flexDirection={{ xs: "column", md: "row" }}>
               <Link href="#" sx={{ margin: "5px" }}>
-                Primeiro Link
+                Service Portal
               </Link>
               <Link href="#" sx={{ margin: "5px" }}>
                 Segundo Link
@@ -77,14 +78,15 @@ const Footer = () => {
           </Grid>
           <Grid item xs={12} sm={6} display="flex" justifyContent={{ xs: "center", sm: "right" }}>
             <Box display="flex" justifyContent="center">
-              <IconLink href="https://www.linkedin.com/in/alimohamedkhodr/" target="_blank" rel="noopener noreferrer">
+              <Box display="flex" justifyContent="center">
+
+                <IconLink href="https://www.linkedin.com/company/aptiv" target="_blank" rel="noopener noreferrer">                 
+                  <SupportAgent fontSize="small" />
+                  &nbsp;&nbsp;<Typography color='white'>Suporte TI</Typography>
+                </IconLink>
+              </Box>
+              <IconLink href="https://www.linkedin.com/company/aptiv" target="_blank" rel="noopener noreferrer">
                 <LinkedInIcon fontSize="small" />
-              </IconLink>
-              <IconLink href="https://wa.me/12988594305" target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon fontSize="small" />
-              </IconLink>
-              <IconLink href="https://github.com/alimkhodr" target="_blank" rel="noopener noreferrer">
-                <GitHubIcon fontSize="small" />
               </IconLink>
             </Box>
           </Grid>

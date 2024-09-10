@@ -7,13 +7,15 @@ import NotFoundPage from './pages/NotFoundPage';
 import TelaInicial from './pages/TelaInicial';
 import { checkTokenValidity } from './utils/checkTokenValidity';
 import Circular from './components/Progress/Circular';
+import Cookies from 'js-cookie';
+import EntregaEPI from './pages/Seguranca/EntregaEPI';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   
   useEffect(() => {
     const validateToken = async () => {
-      const token = localStorage.getItem('token');
+      const token = Cookies.get('token');
   
       if (!token) {
         setIsAuthenticated(false);
@@ -38,6 +40,7 @@ function App() {
           <Route element={isAuthenticated ? <Home /> : <Navigate to="/Login" />}>
             <Route path="TelaInicial" element={<TelaInicial />} />
             <Route path="Scrap" element={<Scrap />} />
+            <Route path="EntregaEPI" element={<EntregaEPI />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />

@@ -16,6 +16,7 @@ import 'dayjs/locale/pt-br';
 import { ChangeEvent, useEffect, useState } from 'react';
 import React from 'react';
 import AddIcon from '@mui/icons-material/Add';
+import Cookies from 'js-cookie';
 
 interface Data {
     [key: string]: any;
@@ -52,11 +53,11 @@ const Scrap = () => {
     const [isLoading, setLoadingForm] = React.useState(false);
     const [statusReg, SetStatusReg] = useState(false);
     const [registro, SetReg] = useState<string>('');
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
 
     //useEffects
     useEffect(() => {
-        fetchCtMaquinaOptions();
+        fetchCt();
     }, []);
 
     useEffect(() => {
@@ -72,7 +73,7 @@ const Scrap = () => {
     }, [fixedformulario]);
 
 
-    const fetchCtMaquinaOptions = async () => {
+    const fetchCt = async () => {
         try {
             const response = await api.get('/auth/list_linha', { 
                 params: { ct: '' } ,
@@ -80,19 +81,15 @@ const Scrap = () => {
             });
             const { data } = response;
             const ctSet = new Set<string>();
-            const maquinaSet = new Set<string>();
 
             data.data.forEach((item: { CT: string, MAQUINA: string }) => {
                 ctSet.add(item.CT);
-                maquinaSet.add(item.MAQUINA);
             });
 
             setCtOptions(Array.from(ctSet));
 
             if (ct) {
                 fetchMaquinasByCt();
-            } else {
-                setMaquinaOptions(Array.from(maquinaSet));
             }
         } catch (error) {
             console.error('Erro ao buscar opções de CT e MAQUINA:', error);
@@ -102,7 +99,10 @@ const Scrap = () => {
     //PREENCHER MAQUINAS POR CT
     const fetchMaquinasByCt = async () => {
         try {
-            const response = await api.get('/auth/list_linha', { params: { ct } });
+            const response = await api.get('/auth/list_linha', { 
+                params: { ct },
+                headers: {Authorization: `Bearer ${token}`}
+            });
             const { data } = response;
             const maquinaSet = new Set<string>();
 
@@ -118,19 +118,24 @@ const Scrap = () => {
 
     //VALIDAR REGISTRO
     const checkRegistro = async () => {
-        try {
-            const response = await api.get('/auth/checkUser', { 
-                params: { username: registro },
-                headers: {Authorization: `Bearer ${token}`}
-            });
-            if (response.status === 200) {
-                SetStatusReg(false);
+        if (registro){
+            try {
+                const response = await api.get('/auth/checkUser', { 
+                    params: { registro: registro },
+                    headers: {Authorization: `Bearer ${token}`}
+                });
+                if (response.status === 200) {
+                    SetStatusReg(false);
+                }
+                else {
+                    SetStatusReg(true);
+                }
+            } catch (error) {
+                console.error('Erro ao buscar o nome do usuário:', error);
             }
-            else {
-                SetStatusReg(true);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar o nome do usuário:', error);
+        }
+        else{
+            SetStatusReg(false);
         }
     };
 
@@ -139,7 +144,6 @@ const Scrap = () => {
         try {
             setLoadingForm(true);
             const response = await api.get('/auth/createNewForm', { 
-                params: { user: localStorage.getItem('username') },
                 headers: {Authorization: `Bearer ${token}`}
             });
 
@@ -232,7 +236,9 @@ const Scrap = () => {
     //DELETAR LINHA
     const deleScrap = async (id: number) => {
         try {
-            await api.delete(`/auth/delete_scrap/${id}`);
+            await api.delete(`/auth/delete_scrap/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setSnackbarMessage('Registro deletado com sucesso');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);

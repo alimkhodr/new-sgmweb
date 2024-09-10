@@ -1,5 +1,6 @@
 import axios from 'axios';
 import api from '../config/axiosConfig';
+import Cookies from 'js-cookie';
 
 export const checkTokenValidity = async (token: string): Promise<boolean> => {
   try {
@@ -12,8 +13,7 @@ export const checkTokenValidity = async (token: string): Promise<boolean> => {
     return response.status === 200;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 403) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
+      Cookies .remove('token');
     }
     return false;
   }

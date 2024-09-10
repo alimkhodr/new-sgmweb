@@ -11,49 +11,44 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../config/axiosConfig';
 import { Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 
 export default function AccountMenu() {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const navigate = useNavigate();
-    const [userNome, setUserNome] = React.useState('Usuário');
-    const [userFuncao, setUserFuncao] = React.useState('Área');
-    const [username] = React.useState(localStorage.getItem('username'));
+    const [userNome, setUserNome] = useState('Usuário');
+    const [userFuncao, setUserFuncao] = useState('Área');
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {setAnchorEl(event.currentTarget);};
     const handleClose = () => {setAnchorEl(null);};
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
+        Cookies.remove('token');
         navigate('/Login', { replace: true });
     };
 
-    React.useEffect(() => {
-        if (username) {
-            async function fetchUserName() {
-                try {
-                    const response = await api.get('/auth/user_data', {
-                        params: { username },
-                        headers: {Authorization: `Bearer ${token}`}
-                    });
-                    const row = response.data;
-                    if (row && row.FUN_NOME) {
-                        setUserNome(row.FUN_NOME.toUpperCase());
-                        setUserFuncao(row.FUN_FUNCAO.toUpperCase());
-                    }
-                    else {
-                        console.error('Erro ao buscar o nome do usuário:');
-                    }
-                } catch (error) {
-                    console.error('Erro ao buscar o nome do usuário:', error);
+    useEffect(() => {
+        async function fetchUserName() {
+            try {
+                const response = await api.get('/auth/user_data', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const row = response.data;
+                if (row && row.FUN_NOME) {
+                    setUserNome(row.FUN_NOME.toUpperCase());
+                    setUserFuncao(row.FUN_FUNCAO.toUpperCase());
+                } else {
+                    console.error('Erro ao buscar o nome do usuário:');
                 }
+            } catch (error) {
+                console.error('Erro ao buscar o nome do usuário:', error);
             }
-
-            fetchUserName();
         }
-    }, [username]);
-
+        fetchUserName();
+    }, [token]);
+    
     const firstLetter = userNome && userNome[0].toUpperCase();
 
     return (

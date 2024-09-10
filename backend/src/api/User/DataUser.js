@@ -1,23 +1,23 @@
 const { poolPromise } = require('../../config/dbConfig');
+const jwt = require('jsonwebtoken');
 
 const user_data = async (req, res) => {
-    const username = req.query.username; 
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
     try {
-        if (!username) {
-            return res.status(400).send('O nome de usuário deve ser fornecido.');
-        }
         const pool = await poolPromise;
         const result = await pool.request()
-            .input('username', username)
-            .query('SELECT * FROM FUNCIONARIO WHERE FUN_REGISTRO = @username');
-        
+            .input('userId', userId)
+            .query('SELECT * FROM FUNCIONARIO WHERE FUN_REGISTRO = @userId');
+
         if (result.recordset.length === 0) {
-            return res.status(404).send('Usuário não encontrado.');
+            return res.status(404).send('Usuário não encontrado');
         }
-        
+
         res.json(result.recordset[0]);
     } catch (error) {
-        console.error('Erro no servidor:', error);
         res.status(500).send('Erro no servidor');
     }
 };

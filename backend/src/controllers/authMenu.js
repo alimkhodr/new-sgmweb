@@ -1,15 +1,16 @@
 const { poolPromise } = require('../config/dbConfig');
+const jwt = require('jsonwebtoken');
 
 const ace_telas = async (req, res) => {
-    const username = req.query.username;
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
     try {
-        if (!username) {
-            return res.status(400).send('O usuário deve ser fornecido.');
-        }
         const pool = await poolPromise;
         const result = await pool.request()
-            .input('username', username)
-            .query('SELECT ACE_TELA FROM ACESSO WHERE ACE_REGISTRO = @username');
+            .input('userId', userId)
+            .query('SELECT ACE_TELA FROM ACESSO WHERE ACE_REGISTRO = @userId');
         
         if (result.recordset.length === 0) {
             return res.status(404).send('Telas não encontradas.');

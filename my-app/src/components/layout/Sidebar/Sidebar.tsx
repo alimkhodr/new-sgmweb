@@ -11,6 +11,7 @@ import api from '../../../config/axiosConfig';
 import Logo from "../../../assets/images/logo/aptiv_logo_white.png";
 import Profile from '../Profile/Profile';
 import { menuConfig } from '../../../config/menuConfig';
+import Cookies from 'js-cookie';
 
 const drawerWidth = 240;
 
@@ -89,22 +90,20 @@ export default function Sidebar() {
   const [openSubmenu, setOpenSubmenu] = React.useState<string | null>(null);
   const [telas, setTelas] = useState<number[]>([]);
   const [menuItems, setMenuItems] = useState(menuConfig);
-  const token = localStorage.getItem('token');
-  
-  useEffect(() => {
-    const fetchTelas = async () => {
-      try {
-        const response = await api.get('/auth/ace_telas', {
-          params: { username: localStorage.getItem('username') },
-          headers: {Authorization: `Bearer ${token}`}
-        });
-        setTelas(response.data.map((tela: string) => parseInt(tela, 10)));
-      } catch (error) {
-        console.error('Erro ao buscar telas:', error);
-      }
-    };
+  const token = Cookies.get('token');
 
-    fetchTelas();
+  useEffect(() => {
+      const fetchTelas = async () => {
+        try {
+          const response = await api.get('/auth/ace_telas', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setTelas(response.data.map((tela: string) => parseInt(tela, 10)));
+        } catch (error) {
+          console.error('Erro ao buscar telas:', error);
+        }
+      };
+      fetchTelas();
   }, []);
 
   useEffect(() => {
