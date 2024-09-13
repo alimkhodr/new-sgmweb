@@ -5,19 +5,10 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import theme from "../theme";
-import { fontSize, height, width } from "@mui/system";
-
-const datas = [
-  {
-    img: "/Comunicados/Plano%20pet.jpg",
-  },
-  {
-    img: "/Comunicados/Plano%20pet.jpg",
-  },
-  {
-    img: "/Comunicados/Plano%20pet.jpg",
-  },
-];
+import api from '../config/axiosConfig';
+import Cookies from 'js-cookie';
+import Alert from '../components/Alerts/AlertSnackbar';
+import { useEffect, useState } from "react";
 
 const SwiperContainer = styled(Box)({
   '.swiper-button-next:after': {
@@ -39,6 +30,56 @@ const SwiperContainer = styled(Box)({
 
 const TelaInicial = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const token = Cookies.get('token');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
+  const [fifo, setFifo] = useState<string>('');
+  const [datas, setDatas] = useState<{ img: string; alt: string; href: string }[]>([]);
+
+  useEffect(() => {
+    getFifo();
+    getComunicados();
+  }, []);
+
+  const getFifo = async () => {
+    try {
+      const response = await api.get('/auth/fifo', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const row = response.data;
+      if (row && row.FIFO_RGB) {
+        setFifo(row.FIFO_RGB);
+      }
+    } catch (error) {
+      console.error('Erro em fifo', error);
+      setSnackbarMessage('Erro em fifo');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const getComunicados = async () => {
+    try {
+      const response = await api.get('/auth/comunicados', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const comunicados = response.data;
+      if (comunicados && Array.isArray(comunicados)) {
+        const formattedData = comunicados.map((item: any) => ({
+          img: item.URL,
+          alt: item.NOME,
+          href: item.HREF
+        }));
+        setDatas(formattedData);
+      }
+    } catch (error) {
+      console.error('Erro em comunicados', error);
+      setSnackbarMessage('Erro em comunicados');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
 
   return (
     <SwiperContainer>
@@ -65,7 +106,7 @@ const TelaInicial = () => {
               Fifo do mês
             </Typography>
             <Box
-              bgcolor={theme.palette.primary.light}
+              bgcolor={theme.palette.primary.main}
               color={theme.palette.primary.contrastText}
               p={'10px 20px'}
               display={'flex'}
@@ -73,13 +114,13 @@ const TelaInicial = () => {
               flexDirection={'row'}
               alignItems={'center'}
               gap={1}
-              borderRadius={3}
+              borderRadius={4}
             >
               <Box
-              height={35}
-              width={35}
-              bgcolor={'yellow'}
-              borderRadius={100}
+                height={35}
+                width={35}
+                bgcolor={fifo}
+                borderRadius={100}
               >
 
               </Box>
@@ -109,23 +150,31 @@ const TelaInicial = () => {
               >
                 {datas.map((data) => (
                   <SwiperSlide key={data.img}>
-                    <img
-                      src={data.img}
-                      alt="Slide"
-                      style={{
-                        width: '100%',
-                        height: 'auto', // Mantém a proporção correta
-                        borderRadius: '8px',
-                        objectFit: 'contain', // Garante que a imagem se ajuste sem estourar
-                        maxHeight: '100%', // Limita a altura da imagem ao slider
-                      }}
-                    />
+                    <a href={data.href} target="_blank" rel="noopener noreferrer">
+                      <img
+                        src={`http://mfgsvr2/Comunicados/${data.img}`}
+                        alt={data.alt}
+                        style={{
+                          width: '100%',
+                          height: 'auto', // Mantém a proporção correta
+                          borderRadius: '8px',
+                          objectFit: 'contain', // Garante que a imagem se ajuste sem estourar
+                          maxHeight: '100%', // Limita a altura da imagem ao slider
+                        }}
+                      />
+                    </a>
                   </SwiperSlide>
                 ))}
               </Swiper>
             </Box>
           </Grid>
         </Grid>
+        <Alert
+          open={snackbarOpen}
+          handleClose={() => setSnackbarOpen(false)}
+          message={snackbarMessage}
+          severity={snackbarSeverity}
+        />
       </Container>
     </SwiperContainer>
   );

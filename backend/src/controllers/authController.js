@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const { poolPromise } = require('../config/dbConfig');
 
 const login = async (req, res) => {
-    const { username, password } = req.query;
+    const { username, password } = req.body;
 
     try {
         const pool = await poolPromise;
@@ -22,7 +21,7 @@ const login = async (req, res) => {
             return res.status(401).send('Senha incorreta');
         }
 
-        const token = jwt.sign({ id: user.FUN_REGISTRO }, process.env.JWT_SECRET, { expiresIn: 3600, });
+        const token = jwt.sign({ id: user.FUN_REGISTRO }, process.env.JWT_SECRET, { expiresIn: 3600 });
         res.json({ token });
     } catch (error) {
         res.status(500).send('Erro no servidor');

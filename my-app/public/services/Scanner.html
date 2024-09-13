@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Ler Barcode</title>
+  <style>
+    #camera {
+      width: 100%;
+      height: 100%;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+    }
+    body{
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas{
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="camera"></div>
+
+  <script src="quagga.min.js"></script>
+
+  <script>
+    Quagga.init({
+      inputStream: {
+        name: "Live",
+        type: "LiveStream",
+        target: document.querySelector('#camera') // Alvo do stream de vídeo
+      },
+      decoder: {
+        readers: [
+          "i2of5_reader"     // Código de barras ITF (Interleaved 2 of 5)
+        ]
+      }
+    }, function (err) {
+      if (err) {
+        console.error("Quagga initialization error:", err);
+        return;
+      }
+      console.log("Initialization finished. Ready to start");
+      Quagga.start();
+    });
+    Quagga.onDetected(function (data) {
+      console.log("Código de barras detectado:", data.codeResult.code);
+      window.parent.postMessage({ barcode: data.codeResult.code }, '*');
+    });
+  </script>
+
+</body>
+
+</html>

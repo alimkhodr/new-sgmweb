@@ -7,15 +7,15 @@ const poolPromise = new sql.ConnectionPool({
     server: process.env.DB_SERVER,
     database: process.env.DB_DATABASE,
     options: {
-        encrypt: false, // Desative a criptografia se não for necessária
-        trustServerCertificate: true // Confie no certificado do servidor
+        encrypt: false,
+        trustServerCertificate: true
     }
 }).connect().then(pool => {
     console.log('Conectado ao banco de dados');
     return pool;
 }).catch(err => {
     console.error('Erro ao conectar ao banco de dados:', err);
-    process.exit(1); // Encerra o processo se houver um erro na conexão
+    process.exit(1);
 });
 
 module.exports = { poolPromise };

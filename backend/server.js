@@ -3,39 +3,47 @@ const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const helmet = require('helmet'); // Importa o helmet para segurança
 const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-const allowedOrigins = [ 
-    'https://10.251.42.250:5173',
-    'https://localhost:5173', // URL do frontend no desenvolvimento
-    //'https://seusite.com' // URL do frontend em produção
+const allowedOrigins = [
+  'https://10.251.42.250:5173',
+  'https://192.168.0.160:5173',
+  'https://localhost:5173',
 ];
 
-// Configuração do CORS
+// Configura CORS
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
     }
+  },
+  credentials: true,
 }));
 
+// Configura Helmet para segurança adicional
+app.use(helmet()); 
+
+// Configura middleware para análise de JSON
 app.use(express.json());
 app.use(bodyParser.json());
+
+// Configura as rotas
 app.use('/api/auth', authRoutes);
 
-// Opções do certificado SSL
+// Configuração HTTPS
 const options = {
-    key: fs.readFileSync('../key.pem'),
-    cert: fs.readFileSync('../cert.pem'), 
+  key: fs.readFileSync('../server-key.pem'),
+  cert: fs.readFileSync('../server-cert.pem'),
 };
 
-// Cria o servidor HTTPS
+// Criação do servidor HTTPS
 https.createServer(options, app).listen(port, () => {
   console.log(`Servidor rodando na porta ${port} (HTTPS)`);
 });

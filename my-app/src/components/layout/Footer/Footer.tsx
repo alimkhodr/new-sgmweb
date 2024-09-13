@@ -54,16 +54,16 @@ const Footer = () => {
           </Grid>
           <Grid item xs={12} md={6} display="flex" justifyContent={{ xs: "center", md: "right" }}>
             <Box display="flex" justifyContent="center" textAlign="center" flexDirection={{ xs: "column", md: "row" }}>
-              <Link href="#" sx={{ margin: "5px" }}>
+              <Link href="http://aptiv.service-now.com/" target="_blank" sx={{ margin: "5px" }}>
                 Service Portal
               </Link>
-              <Link href="#" sx={{ margin: "5px" }}>
+              <Link href="#" target="_blank"  sx={{ margin: "5px" }}>
                 Segundo Link
               </Link>
-              <Link href="#" sx={{ margin: "5px" }}>
+              <Link href="#" target="_blank"  sx={{ margin: "5px" }}>
                 Terceiro Link
               </Link>
-              <Link href="#" sx={{ margin: "5px" }}>
+              <Link href="#" target="_blank"  sx={{ margin: "5px" }}>
                 Quarto Link
               </Link>
             </Box>

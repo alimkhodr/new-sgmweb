@@ -33,14 +33,15 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-
+    
         try {
-            const response = await api.get('/auth/login', {
-                params: { username, password }
+            const response = await api.post('/auth/login', {
+                username,
+                password
             });
-
-            Cookies.set('token', response.data.token, { expires: 7 }); // Save token in cookie
-
+    
+            Cookies.set('token', response.data.token, { expires: 7 });
+    
             setIsAuthenticated(true);
             navigate('/TelaInicial', { replace: true });
         } catch (err: any) {

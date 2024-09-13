@@ -8,16 +8,8 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     https: {
-      key: fs.readFileSync(path.resolve(__dirname, '../key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, '../cert.pem')),
-    },
-    proxy: {
-      '/Comunicados': {
-        target: 'http://mfgsvr2',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/Comunicados/, '/Comunicados'),
-      },
+      key: fs.readFileSync(path.resolve(__dirname, '../server-key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, '../server-cert.pem')),
     },
   },
 });

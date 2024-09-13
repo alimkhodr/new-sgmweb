@@ -93,6 +93,9 @@ const Scrap = () => {
             }
         } catch (error) {
             console.error('Erro ao buscar opções de CT e MAQUINA:', error);
+            setSnackbarMessage('Erro ao buscar opções de CT e MAQUINA');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
 
@@ -113,6 +116,9 @@ const Scrap = () => {
             setMaquinaOptions(Array.from(maquinaSet));
         } catch (error) {
             console.error('Erro ao buscar máquinas para o CT selecionado:', error);
+            setSnackbarMessage('Erro ao buscar máquinas para o CT selecionado');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
 
@@ -132,6 +138,9 @@ const Scrap = () => {
                 }
             } catch (error) {
                 console.error('Erro ao buscar o nome do usuário:', error);
+                setSnackbarMessage('Erro ao buscar o nome do usuário');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
             }
         }
         else{
@@ -143,7 +152,7 @@ const Scrap = () => {
     const createNewForm = async () => {
         try {
             setLoadingForm(true);
-            const response = await api.get('/auth/createNewForm', { 
+            const response = await api.post('/auth/createNewForm', {}, {
                 headers: {Authorization: `Bearer ${token}`}
             });
 
