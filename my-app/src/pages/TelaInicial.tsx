@@ -28,6 +28,14 @@ const SwiperContainer = styled(Box)({
   },
 });
 
+const StyledImage = styled('img')({
+  width: '100%',
+  height: 'auto', // Mantém a proporção correta
+  borderRadius: '8px',
+  objectFit: 'contain', // Garante que a imagem se ajuste sem estourar
+  maxHeight: '100%', // Limita a altura da imagem ao slider
+});
+
 const TelaInicial = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const token = Cookies.get('token');
@@ -66,10 +74,10 @@ const TelaInicial = () => {
       });
       const comunicados = response.data;
       if (comunicados && Array.isArray(comunicados)) {
-        const formattedData = comunicados.map((item: any) => ({
-          img: item.URL,
-          alt: item.NOME,
-          href: item.HREF
+        const formattedData = comunicados.map((row: any) => ({
+          img: `http://mfgsvr2/Comunicados/${row.URL}`,
+          alt: row.NOME,
+          href: row.HREF == '' ? `http://mfgsvr2/Comunicados/${row.URL}` : row.HREF
         }));
         setDatas(formattedData);
       }
@@ -151,17 +159,7 @@ const TelaInicial = () => {
                 {datas.map((data) => (
                   <SwiperSlide key={data.img}>
                     <a href={data.href} target="_blank" rel="noopener noreferrer">
-                      <img
-                        src={`http://mfgsvr2/Comunicados/${data.img}`}
-                        alt={data.alt}
-                        style={{
-                          width: '100%',
-                          height: 'auto', // Mantém a proporção correta
-                          borderRadius: '8px',
-                          objectFit: 'contain', // Garante que a imagem se ajuste sem estourar
-                          maxHeight: '100%', // Limita a altura da imagem ao slider
-                        }}
-                      />
+                      <StyledImage src={data.img} alt={data.alt} />
                     </a>
                   </SwiperSlide>
                 ))}
