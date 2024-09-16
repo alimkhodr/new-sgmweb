@@ -1,11 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const helmet = require('helmet');
 const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 433;
 
 // const allowedOrigins = [
 //   'http://10.251.42.250:5173',
@@ -27,9 +26,6 @@ const port = process.env.PORT;
 
 // Qualquer front acessa
 app.use(cors());
-
-// Configura Helmet para segurança adicional
-app.use(helmet()); 
 
 // Configura middleware para análise de JSON
 app.use(express.json());
