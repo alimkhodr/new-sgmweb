@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 
 // const allowedOrigins = [
 //   'http://10.251.42.250:5173',
