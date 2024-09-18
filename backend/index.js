@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
-const port = 443;
+const port = 3000;
 
 // const allowedOrigins = [
 //   'http://10.251.42.250:5173',
