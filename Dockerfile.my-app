@@ -22,8 +22,8 @@ FROM nginx:alpine
 # Copie a build do React para o diretório padrão do Nginx
 COPY --from=0 /app/dist /usr/share/nginx/html
 
-# Exponha a porta 3001 para o frontend
-EXPOSE 3001
+# Exponha a porta 5173 para o frontend
+EXPOSE 5173
 
 # Inicialize o Nginx
 CMD ["nginx", "-g", "daemon off;"]
