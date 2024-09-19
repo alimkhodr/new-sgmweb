@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-# src/config/axiosConfig.tsx
+src/config/axiosConfig.tsx
 
 # Editor directories and files
 .vscode/*
