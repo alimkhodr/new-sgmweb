@@ -1,0 +1,29 @@
+# Use uma imagem oficial do Node.js, pois o Vite precisa do Node para build
+FROM node:latest
+
+# Defina o diretório de trabalho para o frontend
+WORKDIR /app
+
+# Copie o package.json e package-lock.json do frontend
+COPY my-app/package*.json ./
+
+# Instale as dependências
+RUN npm install
+
+# Copie o restante dos arquivos do frontend
+COPY my-app/ .
+
+# Construa o projeto para produção
+RUN npm run build
+
+# Use uma imagem Nginx para servir a build do React
+FROM nginx:alpine
+
+# Copie a build do React para o diretório padrão do Nginx
+COPY --from=0 /app/dist /usr/share/nginx/html
+
+# Exponha a porta 80 para o frontend
+EXPOSE 80
+
+# Inicialize o Nginx
+CMD ["nginx", "-g", "daemon off;"]
