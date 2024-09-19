@@ -2,16 +2,16 @@
 FROM node:latest
 
 # Defina o diretório de trabalho dentro do contêiner
-WORKDIR /indexjs
+WORKDIR /app
 
-# Copie o package.json para o diretório de trabalho
+# Copie o package.json e package-lock.json para o diretório de trabalho
 COPY package*.json ./
 
 # Instale as dependências do projeto
 RUN npm install
 
-# Copie o arquivo index.js para o diretório de trabalho
-COPY index.js .
+# Copie todos os arquivos do projeto para o diretório de trabalho
+COPY . .
 
 # Exponha a porta que o seu servidor Express vai usar
 EXPOSE 3000
