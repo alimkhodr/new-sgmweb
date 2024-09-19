@@ -1,5 +1,5 @@
 # Use uma imagem oficial do Node.js, pois o Vite precisa do Node para build
-FROM node:latest
+FROM node:latest AS build
 
 # Defina o diretório de trabalho para o frontend
 WORKDIR /app
@@ -20,10 +20,10 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copie a build do React para o diretório padrão do Nginx
-COPY --from=0 /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Exponha a porta 5173 para o frontend
-EXPOSE 5173
+# Exponha a porta 80 para o frontend (porta padrão do Nginx)
+EXPOSE 80
 
 # Inicialize o Nginx
 CMD ["nginx", "-g", "daemon off;"]
