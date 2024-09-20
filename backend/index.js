@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const authRoutes = require('./src/routes/authRoutes');
+const https = require('https');
+const fs = require('fs');
 
 const app = express();
 const port = 3000;
@@ -34,7 +36,12 @@ app.use(bodyParser.json());
 // Configura as rotas
 app.use('/api/auth', authRoutes);
 
-// Criação do servidor
-app.listen(port, () => {
+// Criação do servidor HTTPS
+const options = {
+  key: fs.readFileSync(path.join(__dirname, '..', 'certs', 'your_key.key')),
+  cert: fs.readFileSync(path.join(__dirname, '..', 'certs', 'your_cert.crt')),
+};
+
+https.createServer(options, app).listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
