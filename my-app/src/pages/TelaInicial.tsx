@@ -75,9 +75,9 @@ const TelaInicial = () => {
       const comunicados = response.data;
       if (comunicados && Array.isArray(comunicados)) {
         const formattedData = comunicados.map((row: any) => ({
-          img: `http://mfgsvr2/Comunicados/${row.URL}`,
+          img: `/Comunicados/${row.URL}`,
           alt: row.NOME,
-          href: row.HREF == '' ? `http://mfgsvr2/Comunicados/${row.URL}` : row.HREF
+          href: row.HREF == '' ? `/Comunicados/${row.URL}` : row.HREF
         }));
         setDatas(formattedData);
       }
