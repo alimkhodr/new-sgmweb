@@ -1,3 +1,4 @@
+version: '3.8'
 networks:
   internal:
     driver: bridge
@@ -9,7 +10,7 @@ services:
       - '3000:3000'
     volumes:
       - ./backend:/app
-      - ./certs/selfsigned.key:/etc/ssl/private/selfsigned.key  # Mapear o certificado diretamente
+      - ./certs/selfsigned.key:/etc/ssl/private/selfsigned.key
       - ./certs/selfsigned.crt:/etc/ssl/certs/selfsigned.crt
     networks:
       - internal
@@ -20,7 +21,7 @@ services:
       - '5173:5173'
     volumes:
       - ./my-app:/app
-      - ./certs/selfsigned.key:/etc/ssl/private/selfsigned.key  # Mapear o certificado diretamente
+      - ./certs/selfsigned.key:/etc/ssl/private/selfsigned.key
       - ./certs/selfsigned.crt:/etc/ssl/certs/selfsigned.crt
     networks:
       - internal
