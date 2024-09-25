@@ -1,26 +1,22 @@
-version: '3.8'
-
 services:
   backend:
-    build: ./backend  # Diretório do backend
+    build: ./backend
     ports:
-      - '3000:3000'  # Mapeia a porta 3000 do container para a porta 3000 do host (HTTPS)
+      - '3000:3000'
     volumes:
       - ./backend:/app
-      - ./certs:/etc/ssl  # Mapeia os certificados SSL para o container
+      - ./certs/selfsigned.key:/etc/ssl/private/selfsigned.key  # Mapear o certificado diretamente
+      - ./certs/selfsigned.crt:/etc/ssl/certs/selfsigned.crt
     networks:
       - internal
 
   frontend:
-    build: ./my-app  # Diretório do frontend agora é my-app
+    build: ./my-app
     ports:
-      - '5173:5173'  # Mapeia a porta 5173 do container para a porta 5173 do host (HTTPS)
+      - '5173:5173'
     volumes:
       - ./my-app:/app
-      - ./certs:/etc/ssl  # Mapeia os certificados SSL para o container
+      - ./certs/selfsigned.key:/etc/ssl/private/selfsigned.key  # Mapear o certificado diretamente
+      - ./certs/selfsigned.crt:/etc/ssl/certs/selfsigned.crt
     networks:
       - internal
-
-networks:
-  internal:
-    driver: bridge
