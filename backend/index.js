@@ -38,8 +38,8 @@ app.use('/api/auth', authRoutes);
 
 // Criação do servidor HTTPS
 const options = {
-  key: fs.readFileSync('../etc/ssl/certs/selfsigned.key'),
-  cert: fs.readFileSync('../etc/ssl/certs/selfsigned.crt'),
+  key: fs.readFileSync('certs/selfsigned.key'),
+  cert: fs.readFileSync('certs/selfsigned.crt'),
 };
 
 https.createServer(options, app).listen(port, () => {
