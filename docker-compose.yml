@@ -10,6 +10,7 @@ services:
       - '3000:3000'
     volumes:
       - ./backend:/app
+      - ./my-app/certs:/app/certs  # Mapeia a pasta de certificados
     networks:
       - internal
 
