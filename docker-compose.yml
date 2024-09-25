@@ -2,31 +2,25 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - ./certs:/etc/ssl/certs
+    build: ./backend  # Diretório do backend
     ports:
-      - "3000:3000"
+      - '3000:3000'  # Mapeia a porta 3000 do container para a porta 3000 do host (HTTPS)
+    volumes:
+      - ./backend:/app
+      - ./certs:/etc/ssl  # Mapeia os certificados SSL para o container
+    networks:
+      - internal
 
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.my-app
-    depends_on:
-      - backend
-
-  nginx:
-    image: nginx:alpine
+    build: ./my-app  # Diretório do frontend agora é my-app
     ports:
-      - "443:443"
-      - "5175:80"
+      - '5173:5173'  # Mapeia a porta 5173 do container para a porta 5173 do host (HTTPS)
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./certs:/etc/ssl/certs
-    depends_on:
-      - frontend
-      - backend
+      - ./my-app:/app
+      - ./certs:/etc/ssl  # Mapeia os certificados SSL para o container
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
