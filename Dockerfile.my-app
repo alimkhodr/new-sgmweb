@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copie o package.json e package-lock.json do frontend
 COPY my-app/package*.json ./
+COPY certs/ ../certs/
 
 # Instale as dependências
 RUN npm install
