@@ -19,8 +19,10 @@ RUN npm run build
 # Use uma imagem Nginx para servir a build do React
 FROM nginx:alpine
 
-# Exponha a porta 80 para o frontend (porta padrão do Nginx)
-EXPOSE 5173
+# Copie os arquivos de build para o diretório correto do Nginx
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Comando para iniciar o Vite
-CMD ["npm", "run", "dev"]
+# Exponha a porta 80 para o frontend (porta padrão do Nginx)
+EXPOSE 80
+
+# Não é necessário definir um comando aqui, pois o Nginx já está configurado para iniciar por padrão

@@ -10,8 +10,9 @@ COPY backend/package*.json ./
 # Instale as dependências do projeto
 RUN npm install
 
-# Copie todos os arquivos do projeto para o diretório de trabalho
+# Copie os arquivos do projeto e os certificados
 COPY backend/ .
+COPY certs/ ../certs/
 
 # Exponha a porta que o servidor Express vai usar
 EXPOSE 3000
