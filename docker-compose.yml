@@ -1,24 +1,36 @@
 version: '3.8'
-networks:
-  internal:
-    driver: bridge
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-      - '3000:3000'
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
     volumes:
       - ./backend:/app
-      - ./my-app/certs:/app/certs  # Mapeia a pasta de certificados
     networks:
-      - internal
+      - my-network
 
   frontend:
-    build: ./my-app
+    build:
+      context: ./my-app
+      dockerfile: Dockerfile
     ports:
-      - '5173:5173'
+      - "5173:5173"
     volumes:
       - ./my-app:/app
     networks:
-      - internal
+      - my-network
+    environment:
+      - VITE_API_URL=https://mfgsvr3:3000
+
+networks:
+  my-network:
+    driver: bridge
+
+volumes:
+  backend-data:
+  frontend-data:
