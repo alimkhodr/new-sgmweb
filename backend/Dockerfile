@@ -6,9 +6,8 @@ WORKDIR /app
 # Copie os arquivos de dependência
 COPY package*.json ./
 
-# Instale as dependências, incluindo devDependencies
-ENV NPM_CONFIG_PRODUCTION=false
-RUN npm install
+# Instale todas as dependências, incluindo devDependencies
+RUN npm install --omit=prod
 
 # Copie o restante dos arquivos do projeto
 COPY . .
