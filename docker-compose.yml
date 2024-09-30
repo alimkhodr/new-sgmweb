@@ -1,29 +1,31 @@
+version: '3.8'
+
 services:
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.backend
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-    volumes:
-      - ./backend:/app
     networks:
       - my-network
+    volumes:
+      - backend-data:/app/backend-data
 
   frontend:
     build:
-      context: ./my-app
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.my-app
     ports:
-      - "5173:5173"
-    volumes:
-      - ./my-app:/app
+      - "5173:5173" 
+    depends_on:
+      - backend
     networks:
       - my-network
     environment:
-      - VITE_API_URL=https://mfgsvr3:3000
+      - VITE_API_URL=https://backend:3000
 
 networks:
   my-network:
