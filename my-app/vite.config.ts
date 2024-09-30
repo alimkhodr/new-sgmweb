@@ -8,8 +8,8 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     https: {
-      key: fs.readFileSync(path.resolve(__dirname, './certs/selfsigned.key')),
-      cert: fs.readFileSync(path.resolve(__dirname, './certs/selfsigned.crt')),
+      key: fs.readFileSync(path.resolve(__dirname, '../certs/selfsigned.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, '../certs/selfsigned.crt')),
     },
   },
 });
