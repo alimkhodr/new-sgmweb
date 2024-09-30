@@ -1,7 +1,19 @@
+# Dockerfile do Backend
 FROM node:18
+
 WORKDIR /app
+
+# Copie os arquivos de dependência
 COPY package*.json ./
+
+# Instale as dependências
 RUN npm install
+
+# Copie o restante dos arquivos do projeto
 COPY . .
+
+# Exponha a porta correta
 EXPOSE 3000
-CMD ["node", "index.js"]
+
+# Comando para iniciar o servidor
+CMD ["npm", "run", "dev"]
