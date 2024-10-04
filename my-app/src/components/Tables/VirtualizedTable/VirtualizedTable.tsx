@@ -56,9 +56,10 @@ function VirtualizedTable({ columns, data }: VirtualizedTableProps) {
           key={column.dataKey}
           variant="head"
           align={column.numeric ? 'right' : 'left'}
-          style={{ width: column.width, fontWeight: 'bold'}}
+          style={{ width: column.width, fontWeight: 'bold' }}
           sx={{
             backgroundColor: 'background.paper',
+            whiteSpace: 'nowrap', // Prevent column text from breaking
           }}
         >
           {column.label}
@@ -73,23 +74,31 @@ function VirtualizedTable({ columns, data }: VirtualizedTableProps) {
         <TableCell
           key={column.dataKey}
           align={column.numeric ? 'right' : 'left'}
+          style={{
+            wordWrap: 'break-word',  // Allow breaking long words
+            whiteSpace: 'normal',    // Allow text wrapping to the next line
+            maxWidth: `${column.width}px`,  // Restrict the max width to the column width
+          }}
         >
           {row[column.dataKey]}
         </TableCell>
       ))}
     </>
   );
+  
 
   return (
-    <Paper style={{ height: '100%', width: '100%', boxShadow: 'none' }}>
-      <TableVirtuoso
-        data={data}
-        components={VirtuosoTableComponents}
-        fixedHeaderContent={fixedHeaderContent}
-        itemContent={rowContent}
-      />
-    </Paper>
+<Paper style={{ height: '640px', width: '100%', boxShadow: 'none' }}>
+  <TableVirtuoso
+    data={data}
+    components={VirtuosoTableComponents}
+    fixedHeaderContent={fixedHeaderContent}
+    itemContent={rowContent}
+    style={{ height: '100%' }} // Ensure the TableVirtuoso itself has height
+  />
+</Paper>
   );
 }
+
 
 export default VirtualizedTable;

@@ -3,7 +3,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { Box, Grid, styled, Typography } from "@mui/material";
 import Logo from "../../../assets/images/logo/aptiv_logo_white.png"
 import theme from '../../../theme';
-import { SupportAgent } from '@mui/icons-material';
+// import { SupportAgent } from '@mui/icons-material';
 
 const StyledFooter = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -57,7 +57,7 @@ const Footer = () => {
               <Link href="http://aptiv.service-now.com/" target="_blank" sx={{ margin: "5px" }}>
                 Service Portal
               </Link>
-              <Link href="#" target="_blank"  sx={{ margin: "5px" }}>
+              {/* <Link href="#" target="_blank"  sx={{ margin: "5px" }}>
                 Segundo Link
               </Link>
               <Link href="#" target="_blank"  sx={{ margin: "5px" }}>
@@ -65,7 +65,7 @@ const Footer = () => {
               </Link>
               <Link href="#" target="_blank"  sx={{ margin: "5px" }}>
                 Quarto Link
-              </Link>
+              </Link> */}
             </Box>
           </Grid>
         </Grid>
@@ -78,13 +78,13 @@ const Footer = () => {
           </Grid>
           <Grid item xs={12} sm={6} display="flex" justifyContent={{ xs: "center", sm: "right" }}>
             <Box display="flex" justifyContent="center">
-              <Box display="flex" justifyContent="center">
+              {/* <Box display="flex" justifyContent="center">
 
                 <IconLink href="https://www.linkedin.com/company/aptiv" target="_blank" rel="noopener noreferrer">                 
                   <SupportAgent fontSize="small" />
                   &nbsp;&nbsp;<Typography color='white'>Suporte TI</Typography>
                 </IconLink>
-              </Box>
+              </Box> */}
               <IconLink href="https://www.linkedin.com/company/aptiv" target="_blank" rel="noopener noreferrer">
                 <LinkedInIcon fontSize="small" />
               </IconLink>

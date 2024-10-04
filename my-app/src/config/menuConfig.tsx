@@ -1,6 +1,7 @@
 import { Engineering, Security } from '@mui/icons-material';
 import FactoryIcon from '@mui/icons-material/Factory';
 import RecyclingIcon from '@mui/icons-material/Recycling';
+import ThumbsUpDownIcon from '@mui/icons-material/ThumbsUpDown';
 
 export const menuConfig = [
   {
@@ -13,6 +14,12 @@ export const menuConfig = [
         icon: <RecyclingIcon />,
         route: '/Scrap',
         telaId: 101,
+      },
+      {
+        text: 'Avaliação de Desempenho',
+        icon: <ThumbsUpDownIcon />,
+        route: '/AvaDesempenho',
+        telaId: 1104,
       },
     ],
   },

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login/Login';
-import Scrap from './pages/Manufatura/Scrap';
+import Scrap from './pages/Manufatura/Scrap/Scrap';
+import AvaDesempenho from './pages/Manufatura/AvaDesenpenho/AvaDesempenho';
 import NotFoundPage from './pages/NotFoundPage';
 import TelaInicial from './pages/TelaInicial';
 import { checkTokenValidity } from './utils/checkTokenValidity';
@@ -13,13 +14,18 @@ import api from './config/axiosConfig';
 
 interface ProtectedRouteProps {
   children: JSX.Element;
-  requiredTelaId: number;
+  requiredTelaIds: number[];
   telas: number[];
 }
 
-function ProtectedRoute({ children, requiredTelaId, telas }: ProtectedRouteProps) {
-  return telas.includes(requiredTelaId) ? children : <Navigate to="*?error=403" />;
+function ProtectedRoute({ children, requiredTelaIds, telas }: ProtectedRouteProps) {
+  if (!telas.length) {
+    return <Circular />;
+  }
+  const hasAccess = requiredTelaIds.some((id) => telas.includes(id));
+  return hasAccess ? children : <Navigate to="*?error=403" />;
 }
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -57,39 +63,49 @@ function App() {
     }
   }, [isAuthenticated]);
 
+  if (isAuthenticated === null) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Circular />
+      </div>
+    );
+  }
+
   return (
     <Router>
-      {isAuthenticated === null ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <Circular />
-        </div>
-      ) : (
-        <Routes>
-          <Route path="/" element={isAuthenticated ? <Navigate to="/TelaInicial" /> : <Navigate to="/Login" />} />
-          <Route path="/Login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-          <Route element={isAuthenticated ? <Home /> : <Navigate to="/Login" />}>
-            <Route path="TelaInicial" element={<TelaInicial />} />
-            <Route
-              path="Scrap"
-              element={
-                <ProtectedRoute requiredTelaId={101 && 99} telas={telas}>
-                  <Scrap />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="EntregaEPI"
-              element={
-                <ProtectedRoute requiredTelaId={250 && 99} telas={telas}>
-                  <EntregaEPI />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
+      <Routes>
+        <Route path="/" element={isAuthenticated ? <Navigate to="/TelaInicial" /> : <Navigate to="/Login" />} />
+        <Route path="/Login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+        <Route element={isAuthenticated ? <Home /> : <Navigate to="/Login" />}>
+          <Route path="TelaInicial" element={<TelaInicial />} />
+          <Route
+            path="Scrap"
+            element={
+              <ProtectedRoute requiredTelaIds={[101, 99]} telas={telas}>
+                <Scrap />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="AvaDesempenho"
+            element={
+              <ProtectedRoute requiredTelaIds={[1104, 99]} telas={telas}>
+                <AvaDesempenho />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="EntregaEPI"
+            element={
+              <ProtectedRoute requiredTelaIds={[250, 99]} telas={telas}>
+                <EntregaEPI />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      )}
+        </Route>
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </Router>
   );
 }

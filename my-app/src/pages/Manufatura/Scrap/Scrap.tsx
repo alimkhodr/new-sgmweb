@@ -3,11 +3,11 @@ import {
     Container, Grid, Typography, TextField, IconButton, Box, MenuItem, InputAdornment
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import VirtualizedTable from '../../components/Tables/VirtualizedTable/VirtualizedTable';
-import Alert from '../../components/Alerts/AlertSnackbar';
-import theme from '../../theme';
-import StyledButton from '../../components/StyledButton/StyledButton';
-import api from '../../config/axiosConfig';
+import VirtualizedTable from '../../../components/Tables/VirtualizedTable/VirtualizedTable';
+import Alert from '../../../components/Alerts/AlertSnackbar';
+import theme from '../../../theme';
+import StyledButton from '../../../components/StyledButton/StyledButton';
+import api from '../../../config/axiosConfig';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
