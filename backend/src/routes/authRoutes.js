@@ -11,11 +11,11 @@ const { ace_telas } = require('../controllers/authMenu');
 const { fifo } = require('../api/TelaInicial/EtiquetaFifo');
 const { comunicados } = require('../api/TelaInicial/Comunicado');
 const authenticateToken = require('../middleware/authMiddleware');
+const { list_ava } = require('../api/AvaDesempenho/listAva');
 const router = express.Router();
 
 // Public Routes
 router.post('/login', login);
-router.post('/createNewForm', authenticateToken, createNewForm);
 
 // Protected Routes
 router.get('/list_form_scrap', authenticateToken, list_form_scrap);
@@ -26,6 +26,8 @@ router.get('/list_linha', authenticateToken, list_linha);
 router.get('/ace_telas', authenticateToken, ace_telas);
 router.get('/fifo', authenticateToken, fifo);
 router.get('/comunicados', authenticateToken, comunicados);
+router.get('/list_ava', authenticateToken, list_ava);
+router.post('/createNewForm', authenticateToken, createNewForm);
 
 router.delete('/delete_scrap/:id', authenticateToken, delete_scrap);
 

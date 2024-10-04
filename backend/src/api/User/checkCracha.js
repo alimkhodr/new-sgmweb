@@ -9,7 +9,7 @@ const checkCodin = async (req, res) => {
       const pool = await poolPromise;
       const result = await pool.request()
         .input('barcode', barcode)
-        .query(`SELECT FUN_NOME FROM FUNCIONARIO WHERE FUN_CODIN = @barcode AND FUN_STATUS = 'ATIVO'`);
+        .query(`SELECT FUN_NOME,FUN_REGISTRO FROM FUNCIONARIO WHERE FUN_CODIN = @barcode AND FUN_STATUS = 'ATIVO'`);
   
       if (result.recordset.length === 0) {
         return res.status(204).send('Usuário não encontrado.');

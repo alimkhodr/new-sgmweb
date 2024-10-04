@@ -11,7 +11,7 @@ const poolPromise = new sql.ConnectionPool({
         trustServerCertificate: true
     }
 }).connect().then(pool => {
-    console.log('Conectado ao banco de dados');
+    console.log('Conectado ao banco de dados:', process.env.DB_DATABASE );
     return pool;
 }).catch(err => {
     console.error('Erro ao conectar ao banco de dados:', err);
