@@ -75,10 +75,12 @@ const AvaDesempenho = () => {
             const row = response.data;
              if (row && row.FUN_REGISTRO) {
                if (row.FUN_REGISTRO !=  selectedData?.REGISTRO){
-                
+                SetStatusCracha(true);
                }
-            }
-            SetStatusCracha(false);
+               else{
+                SetStatusCracha(false);
+               }
+            }       
           }
         } catch (error) {
           console.error('Crachá não encontrado:', error);
