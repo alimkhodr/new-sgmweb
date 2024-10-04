@@ -9,24 +9,25 @@ import AvaStepper from './AvaStepper';
 import { ArrowBack, QrCodeScanner } from '@mui/icons-material';
 import Scanner from '../../../components/Scanner/Scanner';
 import api from '../../../config/axiosConfig';
+import StyledButton from '../../../components/StyledButton/StyledButton';
 
 interface Data {
     [key: string]: any;
 }
 
 const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: 'none',
-  boxShadow: 24,
-  pt: 2,
-  px: 4,
-  pb: 3,
-  borderRadius: 2
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: 'none',
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+    borderRadius: 2
 };
 
 const AvaDesempenho = () => {
@@ -58,38 +59,37 @@ const AvaDesempenho = () => {
 
     useEffect(() => {
         if (barcode) {
-          checkCracha();
+            checkCracha();
         }
-      }, [barcode]);
+    }, [barcode]);
 
-      const checkCracha = async () => {
+    const checkCracha = async () => {
         try {
-          const response = await api.get('/auth/checkCodin', {
-            params: { barcode: barcode },
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          if (response.status === 204) {
-            SetStatusCracha(true);
-          }
-          else {
-            const row = response.data;
-             if (row && row.FUN_REGISTRO) {
-               if (row.FUN_REGISTRO !=  selectedData?.REGISTRO){
+            const response = await api.get('/auth/checkCodin', {
+                params: { barcode: barcode },
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.status === 204) {
                 SetStatusCracha(true);
-               }
-               else{
-                SetStatusCracha(false);
-               }
-            }       
-          }
+            }
+            else {
+                const row = response.data;
+                if (row && row.FUN_REGISTRO) {
+                    if (row.FUN_REGISTRO != selectedData?.REGISTRO) {
+                        SetStatusCracha(true);
+                    }
+                    else {
+                        SetStatusCracha(false);
+                    }
+                }
+            }
         } catch (error) {
-          console.error('Crachá não encontrado:', error);
-          setSnackbarMessage('Crachá não encontrado');
-          setSnackbarSeverity('error');
-          setSnackbarOpen(true);
+            console.error('Crachá não encontrado:', error);
+            setSnackbarMessage('Crachá não encontrado');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
-      };
-
+    };
 
     return (
         <Container>
@@ -102,9 +102,9 @@ const AvaDesempenho = () => {
                 <Grid padding={'0 0 30px 0'} display={"flex"} flexDirection={"row"} gap={1}>
                     <Box display={selectedData ? 'flex' : 'none'} >
                         <IconButton
-                        aria-label="delete" 
-                        size="large" 
-                        onClick={() => setSelectedData(null)}
+                            aria-label="delete"
+                            size="large"
+                            onClick={() => setSelectedData(null)}
                         >
                             <ArrowBack fontSize="inherit" />
                         </IconButton>
@@ -186,7 +186,7 @@ const AvaDesempenho = () => {
                         </Box>
                         <Typography>{selectedData?.MES || ''}{selectedData ? "/" : ''}{selectedData?.ANO || ''}</Typography>
                         <AvaStepper />
-                        <FormControl sx={{ m: 1, width: '100%' }} variant="outlined">
+                        <FormControl sx={{ width: '100%' }} variant="outlined">
                             <InputLabel htmlFor="outlined-adornment-cracha">Crachá</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-cracha"
@@ -204,8 +204,17 @@ const AvaDesempenho = () => {
                                 fullWidth
                             />
                         </FormControl>
-
-                        <Typography variant='caption'>EAGP_4-3_HR-SAO_01-F08_PT</Typography>
+                        <Box display={"flex"} justifyContent={"space-between"}>
+                            <Typography variant='caption'>EAGP_4-3_HR-SAO_01-F08_PT</Typography>
+                            <StyledButton
+                                // onClick={createNewForm}
+                                // loading={isLoading}
+                                loadingPosition="end"
+                                variant="contained"
+                            >
+                                Salvar
+                            </StyledButton>
+                        </Box>
                     </Box>
                 </Grid>
             </Grid>
