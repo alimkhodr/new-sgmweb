@@ -109,7 +109,7 @@ const AvaDesempenho = () => {
                             <ArrowBack fontSize="inherit" />
                         </IconButton>
                     </Box>
-                    <Typography variant="h1" fontWeight={'bold'} display={'flex'} alignItems={'center'}>
+                    <Typography variant="h3" fontWeight={'bold'} display={'flex'} alignItems={'center'}>
                         Avaliação de Desempenho
                     </Typography>
                 </Grid>
@@ -211,6 +211,7 @@ const AvaDesempenho = () => {
                                 // loading={isLoading}
                                 loadingPosition="end"
                                 variant="contained"
+                                disabled
                             >
                                 Salvar
                             </StyledButton>

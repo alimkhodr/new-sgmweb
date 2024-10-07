@@ -44,6 +44,8 @@ const TelaInicial = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
   const [fifo, setFifo] = useState<string>('');
   const [datas, setDatas] = useState<{ img: string; alt: string; href: string }[]>([]);
+  const date = new Date();
+  const month = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(date);
 
   useEffect(() => {
     getFifo();
@@ -110,7 +112,7 @@ const TelaInicial = () => {
             gap={2}
           >
             <Typography
-              variant="h1">
+              variant="h3">
               Fifo do mês
             </Typography>
             <Box
@@ -122,19 +124,19 @@ const TelaInicial = () => {
               flexDirection={'row'}
               alignItems={'center'}
               gap={1}
-              borderRadius={4}
+              borderRadius={10}
             >
               <Box
-                height={35}
-                width={35}
+                height={45}
+                width={55}
                 bgcolor={fifo}
-                borderRadius={100}
+                borderRadius={10}
               >
 
               </Box>
               <Typography
-                variant="h1">
-                Setembro
+                variant="h3">
+                {month.toUpperCase()}
               </Typography>
             </Box>
           </Grid>

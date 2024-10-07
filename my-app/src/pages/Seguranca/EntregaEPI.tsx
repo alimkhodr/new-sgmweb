@@ -93,7 +93,7 @@ const EntregaEPI = () => {
         borderRadius={2}
       >
         <Grid>
-          <Typography variant="h1" padding={'0 0 30px 0'} fontWeight={'bold'}>
+          <Typography variant="h3" padding={'0 0 30px 0'} fontWeight={'bold'}>
             Entrega de EPI
           </Typography>
         </Grid>

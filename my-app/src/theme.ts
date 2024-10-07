@@ -28,12 +28,6 @@ let theme = createTheme({
     },
     typography: {
         fontFamily: "Helvetica, Arial, sans-serif",
-        h1: {
-            fontSize: '2.2rem',
-        },
-        h2: {
-            fontSize: '1.5rem',
-        },
     }
 });
 

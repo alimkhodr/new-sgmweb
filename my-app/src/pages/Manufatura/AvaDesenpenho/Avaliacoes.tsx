@@ -70,7 +70,6 @@ const Avaliacoes = ({ onRowSelect }: AvaliacoesProps) => {
                 setSnackbarOpen(true);
                 return;
             }
-            console.log(response.data)
             const formattedData = response.data.map(row => {
                 const admissao = row.FUN_DATA_ADMISSAO ? row.FUN_DATA_ADMISSAO.split('T')[0] : null;
                 if (row.FUN_REGISTRO != null) {

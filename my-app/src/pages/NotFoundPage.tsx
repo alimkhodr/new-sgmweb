@@ -12,7 +12,7 @@ const NotFoundPage = () => {
     <>
       <Container>
         <Box component="main" sx={{ p: 3, marginBottom: 5, marginTop: 12 }}>
-          <Typography variant="h1">{error || '404'}</Typography>
+          <Typography variant="h3">{error || '404'}</Typography>
           <Typography variant="h6">{error === '403' ? 'Acesso negado' : 'Página não encontrada'}</Typography>
           <StyledButton onClick={() => navigate('/TelaInicial')}>
             Voltar ao início
