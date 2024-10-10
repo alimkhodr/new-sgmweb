@@ -154,8 +154,8 @@ const AvaDesempenho = () => {
 
     const checkDisabled = () => {
         if (steps) {
-            return !selectedData || !steps.RESULTADO || steps.AVALIACAO_1 === 'Não' && !steps.JUSTIFICA_HABILIDADE || steps.AVALIACAO_2 === 'Sim' && !steps.JUSTIFICA_POTENCIAL || !steps.PLANO_ACAO || !steps.AVALIACAO_1 || !steps.AVALIACAO_2;
-            // return !selectedData || !barcode || statusCracha === true || !steps.RESULTADO || steps.AVALIACAO_1 === 'Não' && !steps.JUSTIFICA_HABILIDADE || steps.AVALIACAO_2 === 'Sim' && !steps.JUSTIFICA_POTENCIAL || !steps.PLANO_ACAO || !steps.AVALIACAO_1 || !steps.AVALIACAO_2;
+            // return !selectedData || !steps.RESULTADO || steps.AVALIACAO_1 === 'Não' && !steps.JUSTIFICA_HABILIDADE || steps.AVALIACAO_2 === 'Sim' && !steps.JUSTIFICA_POTENCIAL || !steps.PLANO_ACAO || !steps.AVALIACAO_1 || !steps.AVALIACAO_2;
+            return !selectedData || !barcode || statusCracha === true || !steps.RESULTADO || steps.AVALIACAO_1 === 'Não' && !steps.JUSTIFICA_HABILIDADE || steps.AVALIACAO_2 === 'Sim' && !steps.JUSTIFICA_POTENCIAL || !steps.PLANO_ACAO || !steps.AVALIACAO_1 || !steps.AVALIACAO_2;
         }
     };
 
