@@ -12,10 +12,10 @@ export default defineConfig({
       cert: fs.readFileSync(path.resolve(__dirname, '../certs/selfsigned.crt')),
     },
     proxy: {
-      '^/mfgsvr2': {
+      '^/mfgsvr': {
         target: 'http://mfgsvr2',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/mfgsvr2/, ''),
+        rewrite: (path) => path.replace(/^\/mfgsvr/, ''),
       },
     },
   },
