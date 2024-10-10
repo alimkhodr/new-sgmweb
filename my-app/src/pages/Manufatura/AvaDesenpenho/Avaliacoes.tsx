@@ -5,7 +5,6 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Box } from '@mui/system';
 import Alert from '../../../components/Alerts/AlertSnackbar';
-import axios from 'axios';
 import { IconButton, MenuItem, TextField } from '@mui/material';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import api from '../../../config/axiosConfig';
@@ -40,6 +39,7 @@ const Avaliacoes = ({ onRowSelect }: AvaliacoesProps) => {
     const currentMonth = new Date().getMonth() + 1;
     const [month, setMonth] = useState<string>(currentMonth.toString());
     const [year, setYear] = useState<string>('2024');
+    const [userType, setUserType] = useState<string>('');
 
     const CloseSnackbar = () => {
         setSnackbarOpen(false);
@@ -47,29 +47,46 @@ const Avaliacoes = ({ onRowSelect }: AvaliacoesProps) => {
 
     const selectMonth = (event: ChangeEvent<HTMLInputElement>) => {
         setMonth(event.target.value);
-        listAva();
     };
 
     const selectYear = (event: ChangeEvent<HTMLInputElement>) => {
         setYear(event.target.value);
-        listAva();
     };
+
+    useEffect(() => {
+        async function avaliador_type() {
+            try {
+                const response = await api.get('/auth/ava_type', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (response.status === 200) {
+                    setUserType('NORMAL');
+                }
+                const row = response.data;
+                if (row && row.CARGO) {
+                    setUserType(row.CARGO.toUpperCase());
+                }
+            } catch (error: any) {
+                    console.error('Erro ao buscar o tipo do usuário:', error);             
+            }
+        }
+        avaliador_type();
+    }, [token]);
+
+    useEffect(() => {
+        if (userType) {
+            listAva();
+        }
+    }, [userType, year, month]);
 
     //LISTAR FORMULARIO
     const listAva = async (event?: React.FormEvent) => {
         if (event) event.preventDefault();
-
         try {
             const response = await api.get<Data[]>('/auth/list_ava', {
-                params: { mes: month, ano: year },
+                params: { mes: month, ano: year, tipo: userType },
                 headers: { Authorization: `Bearer ${token}` }
             });
-            if (response.status === 200 && response.data.length === 0) {
-                setSnackbarMessage('Formulário não encontrado.');
-                setSnackbarSeverity('warning');
-                setSnackbarOpen(true);
-                return;
-            }
             const formattedData = response.data.map(row => {
                 const admissao = row.FUN_DATA_ADMISSAO ? row.FUN_DATA_ADMISSAO.split('T')[0] : null;
                 if (row.FUN_REGISTRO != null) {
@@ -92,6 +109,7 @@ const Avaliacoes = ({ onRowSelect }: AvaliacoesProps) => {
                                     TURNO: row.TURNO,
                                     MES: month,
                                     ANO: year,
+                                    USER_TYPE: userType,
                                 })}
                             >
                                 <PlayCircleIcon />
@@ -103,22 +121,12 @@ const Avaliacoes = ({ onRowSelect }: AvaliacoesProps) => {
 
             setRows(formattedData);
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response?.status === 404) {
-                setSnackbarMessage('Formulário não encontrado.');
-                setSnackbarSeverity('warning');
-                setSnackbarOpen(true);
-            } else {
-                console.error('Erro ao buscar dados:', error);
-                setSnackbarMessage('Ocorreu um erro ao carregar os dados');
-                setSnackbarSeverity('error');
-                setSnackbarOpen(true);
-            }
+            console.error('Erro ao buscar dados:', error);
+            setSnackbarMessage('Ocorreu um erro ao carregar os dados');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
-
-    useEffect(() => {
-        listAva();
-    }, []);
 
     const months = [
         { value: '1', label: 'Janeiro' },

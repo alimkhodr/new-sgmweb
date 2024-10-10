@@ -15,6 +15,19 @@ interface Data {
     [key: string]: any;
 }
 
+interface FormData {
+    resultado: number;
+    respostas: number[];
+    area_atuacao: string;
+    avaliacao1: string;
+    avaliacao2: string;
+    obs1: string;
+    obs2: string;
+    planoAcao: string;
+    registro: number;
+    userType: string;
+}
+
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -33,6 +46,8 @@ const style = {
 const AvaDesempenho = () => {
     const token = Cookies.get('token');
     const [selectedData, setSelectedData] = useState<Data | null>(null);
+    const [isLoading, setLoading] = useState(false);
+    const [steps, setSteps] = useState<Data | null>(null);
     const [barcode, setBarcode] = useState<string>('');
     const [open, setOpen] = useState(false);
     const [statusCracha, SetStatusCracha] = useState(false);
@@ -44,6 +59,7 @@ const AvaDesempenho = () => {
     const CloseSnackbar = () => {
         setSnackbarOpen(false);
     };
+
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
             if (event.data && event.data.barcode && event.data.barcode.startsWith('69') && event.data.barcode.length === 14) {
@@ -56,6 +72,51 @@ const AvaDesempenho = () => {
             window.removeEventListener('message', handleMessage);
         };
     }, []);
+
+    const createNewForm = async () => {
+        try {
+            if (steps) {
+                setLoading(true);
+                const respostas: number[] = [];
+
+                Object.keys(steps).forEach((key: string) => {
+                    if (key.startsWith("PERGUNTA")) {
+                        respostas.push(steps[key as keyof typeof steps] as number);
+                    }
+                });
+
+                const formData: FormData = {
+                    resultado: steps.RESULTADO as number,
+                    respostas: respostas,
+                    area_atuacao: steps.AREA_ATUACAO as string,
+                    avaliacao1: steps.AVALIACAO_1 as string,
+                    avaliacao2: steps.AVALIACAO_2 as string,
+                    obs1: steps.JUSTIFICA_HABILIDADE as string,
+                    obs2: steps.JUSTIFICA_POTENCIAL as string,
+                    planoAcao: steps.PLANO_ACAO as string,
+                    registro: selectedData?.REGISTRO ?? 0,
+                    userType: selectedData?.USER_TYPE
+                };
+
+                const response = await api.post('/auth/createNewFormAva', formData, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (response.status === 201) {
+                    setSnackbarMessage('Avaliação de desempenho feita com sucesso.');
+                    setSnackbarSeverity('success');
+                    setSnackbarOpen(true);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao criar novo formulário:', error);
+            setSnackbarMessage('Erro ao criar novo formulário.');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (barcode) {
@@ -91,6 +152,18 @@ const AvaDesempenho = () => {
         }
     };
 
+    const checkDisabled = () => {
+        if (steps) {
+            return !selectedData || !steps.RESULTADO || steps.AVALIACAO_1 === 'Não' && !steps.JUSTIFICA_HABILIDADE || steps.AVALIACAO_2 === 'Sim' && !steps.JUSTIFICA_POTENCIAL || !steps.PLANO_ACAO || !steps.AVALIACAO_1 || !steps.AVALIACAO_2;
+            // return !selectedData || !barcode || statusCracha === true || !steps.RESULTADO || steps.AVALIACAO_1 === 'Não' && !steps.JUSTIFICA_HABILIDADE || steps.AVALIACAO_2 === 'Sim' && !steps.JUSTIFICA_POTENCIAL || !steps.PLANO_ACAO || !steps.AVALIACAO_1 || !steps.AVALIACAO_2;
+        }
+    };
+
+    const clear = () => {
+        setSelectedData(null);
+        setSteps(null);
+    };
+
     return (
         <Container>
             <Grid
@@ -102,9 +175,9 @@ const AvaDesempenho = () => {
                 <Grid padding={'0 0 30px 0'} display={"flex"} flexDirection={"row"} gap={1}>
                     <Box display={selectedData ? 'flex' : 'none'} >
                         <IconButton
-                            aria-label="delete"
+                            aria-label="open"
                             size="large"
-                            onClick={() => setSelectedData(null)}
+                            onClick={clear}
                         >
                             <ArrowBack fontSize="inherit" />
                         </IconButton>
@@ -174,19 +247,11 @@ const AvaDesempenho = () => {
                                         fullWidth
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={12}>
-                                    <TextField
-                                        id="linha"
-                                        label="Linha"
-                                        required
-                                        fullWidth
-                                    />
-                                </Grid>
                             </Grid>
                         </Box>
                         <Typography>{selectedData?.MES || ''}{selectedData ? "/" : ''}{selectedData?.ANO || ''}</Typography>
-                        <AvaStepper />
-                        <FormControl sx={{ width: '100%' }} variant="outlined">
+                        <AvaStepper key={selectedData ? 'avaliacao' : 'reset'} onChangesetSteps={setSteps} />
+                        <FormControl sx={{ width: '100%' }} variant="outlined" disabled>
                             <InputLabel htmlFor="outlined-adornment-cracha">Crachá</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-cracha"
@@ -208,10 +273,11 @@ const AvaDesempenho = () => {
                             <Typography variant='caption'>EAGP_4-3_HR-SAO_01-F08_PT</Typography>
                             <StyledButton
                                 // onClick={createNewForm}
-                                // loading={isLoading}
+                                loading={isLoading}
                                 loadingPosition="end"
                                 variant="contained"
-                                disabled
+                                onClick={createNewForm}
+                                disabled={checkDisabled()}
                             >
                                 Salvar
                             </StyledButton>

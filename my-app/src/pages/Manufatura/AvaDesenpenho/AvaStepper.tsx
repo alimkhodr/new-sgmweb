@@ -7,14 +7,27 @@ import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import { FormControlLabel, Radio, RadioGroup, TextField } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
-export default function TextMobileStepper() {
+interface Data {
+  [key: string]: any;
+}
+
+interface AvaStepperProps {
+  onChangesetSteps: (data: Data) => void;
+}
+
+const AvaStepper = ({ onChangesetSteps }: AvaStepperProps) => {
   const [activeStep, setActiveStep] = useState(0);
   const [activeStepAvaliador, setActiveStepAvaliador] = useState(0);
   const [selectedValues, setSelectedValues] = useState(Array(17).fill('')); //quantidade de perguntas
+  const [selectedValuesAvaliador, setSelectedValuesAvaliador] = useState(Array(2).fill('')); //quantidade de perguntas
   const [resultado, setResultado] = useState<number>(0);
+  const [areaAtuacao, setAreaAtuacao] = useState<string>('');
+  const [justificaHabilidade, setJustificaHabilidade] = useState<string>('');
+  const [justificaPotencial, setJustificaPotencial] = useState<string>('');
+  const [planoAcao, setPlanoAcao] = useState<string>('');
 
   const getResultadoLabel = (resultado: number): string => {
     if (resultado >= 95 && resultado <= 100) {
@@ -27,6 +40,36 @@ export default function TextMobileStepper() {
       return "Insatisfatório";
     }
   };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValues = [...selectedValues];
+    newValues[activeStep] = event.target.value;
+    setSelectedValues(newValues);
+  };
+
+  const handleChangeAvaliador = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValues = [...selectedValuesAvaliador];
+    newValues[activeStepAvaliador] = event.target.value;
+    setSelectedValuesAvaliador(newValues);
+  };
+
+  useEffect(() => {
+    const perguntas = selectedValues.reduce((acc, value, index) => {
+      acc[`PERGUNTA${index + 1}`] = value;
+      return acc;
+    }, {});
+
+    onChangesetSteps({
+      ...perguntas,
+      AREA_ATUACAO: areaAtuacao,
+      AVALIACAO_1: selectedValuesAvaliador[0],
+      AVALIACAO_2: selectedValuesAvaliador[1],
+      RESULTADO: resultado,
+      JUSTIFICA_HABILIDADE: justificaHabilidade,
+      JUSTIFICA_POTENCIAL: justificaPotencial,
+      PLANO_ACAO: planoAcao,
+    });
+  }, [resultado, selectedValues, areaAtuacao, justificaHabilidade, justificaPotencial, planoAcao, selectedValuesAvaliador,]);
 
   const steps = [
     {
@@ -205,6 +248,9 @@ export default function TextMobileStepper() {
               multiline
               maxRows={4}
               fullWidth
+              value={areaAtuacao}
+              disabled={selectedValues[activeStep] === ''}
+              onChange={(e) => setAreaAtuacao(e.target.value)}
             />
           </Box>
         </>
@@ -233,9 +279,11 @@ export default function TextMobileStepper() {
             row
             aria-labelledby="demo-row-radio-buttons-group-label"
             name="row-radio-buttons-group"
+            value={selectedValuesAvaliador[activeStepAvaliador]}
+            onChange={handleChangeAvaliador}
           >
-            <FormControlLabel value="1" control={<Radio />} label="Sim" />
-            <FormControlLabel value="2" control={<Radio />} label="Não" />
+            <FormControlLabel value="Sim" control={<Radio />} label="Sim" />
+            <FormControlLabel value="Não" control={<Radio />} label="Não" />
           </RadioGroup>
           <Box width={"100%"} >
             <TextField
@@ -244,6 +292,9 @@ export default function TextMobileStepper() {
               multiline
               maxRows={4}
               fullWidth
+              required={selectedValuesAvaliador[activeStepAvaliador] === "Não"}
+              value={justificaHabilidade}
+              onChange={(e) => setJustificaHabilidade(e.target.value)}
             />
           </Box>
         </>
@@ -258,9 +309,11 @@ export default function TextMobileStepper() {
             row
             aria-labelledby="demo-row-radio-buttons-group-label"
             name="row-radio-buttons-group"
+            value={selectedValuesAvaliador[activeStepAvaliador]}
+            onChange={handleChangeAvaliador}
           >
-            <FormControlLabel value="1" control={<Radio />} label="Sim" />
-            <FormControlLabel value="2" control={<Radio />} label="Não" />
+            <FormControlLabel value="Sim" control={<Radio />} label="Sim" />
+            <FormControlLabel value="Não" control={<Radio />} label="Não" />
           </RadioGroup>
           <Box width={"100%"} >
             <TextField
@@ -269,6 +322,9 @@ export default function TextMobileStepper() {
               multiline
               maxRows={4}
               fullWidth
+              required={selectedValuesAvaliador[activeStepAvaliador] === "Sim"}
+              value={justificaPotencial}
+              onChange={(e) => setJustificaPotencial(e.target.value)}
             />
           </Box>
         </>
@@ -288,6 +344,9 @@ export default function TextMobileStepper() {
               multiline
               maxRows={4}
               fullWidth
+              required={resultado < 75 && resultado != 0}
+              value={planoAcao}
+              onChange={(e) => setPlanoAcao(e.target.value)}
             />
           </Box>
         </>
@@ -348,11 +407,6 @@ export default function TextMobileStepper() {
     setActiveStepAvaliador((prevActiveStepAvaliador) => prevActiveStepAvaliador - 1);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValues = [...selectedValues];
-    newValues[activeStep] = event.target.value;
-    setSelectedValues(newValues);
-  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -441,6 +495,7 @@ export default function TextMobileStepper() {
             <Button
               size="small"
               onClick={handleNextAvaliador}
+              disabled={(activeStepAvaliador === 2) || selectedValuesAvaliador[activeStepAvaliador] === '' || (selectedValuesAvaliador[0] === "Não" && justificaHabilidade === '') || (selectedValuesAvaliador[1] === "Sim" && justificaPotencial === '')}
             >
               Próximo
               <KeyboardArrowRight />
@@ -457,3 +512,5 @@ export default function TextMobileStepper() {
     </Box>
   );
 }
+
+export default AvaStepper;
