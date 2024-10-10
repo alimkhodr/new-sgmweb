@@ -13,7 +13,7 @@ export default defineConfig({
     },
     proxy: {
       '^/mfgsvr': {
-        target: 'http://mfgsvr2',
+        target: 'http://10.251.42.75',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/mfgsvr/, ''),
       },
