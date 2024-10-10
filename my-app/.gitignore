@@ -12,10 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Ignorar arquivos de configuração específicos
-vite.config.ts
-src/config/axiosConfig.tsx
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
