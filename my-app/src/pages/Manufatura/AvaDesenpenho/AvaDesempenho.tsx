@@ -251,7 +251,7 @@ const AvaDesempenho = () => {
                         </Box>
                         <Typography>{selectedData?.MES || ''}{selectedData ? "/" : ''}{selectedData?.ANO || ''}</Typography>
                         <AvaStepper key={selectedData ? 'avaliacao' : 'reset'} onChangesetSteps={setSteps} />
-                        <FormControl sx={{ width: '100%' }} variant="outlined" disabled>
+                        <FormControl sx={{ width: '100%' }} variant="outlined">
                             <InputLabel htmlFor="outlined-adornment-cracha">Crachá</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-cracha"
