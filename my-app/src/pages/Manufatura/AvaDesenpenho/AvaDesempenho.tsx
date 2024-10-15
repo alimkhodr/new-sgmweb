@@ -48,7 +48,7 @@ const AvaDesempenho = () => {
     const [selectedData, setSelectedData] = useState<Data | null>(null);
     const [isLoading, setLoading] = useState(false);
     const [steps, setSteps] = useState<Data | null>(null);
-    const [barcode, setBarcode] = useState<string>('');
+    const [barcode, setBarcode] = useState<string | null>(null);
     const [open, setOpen] = useState(false);
     const [statusCracha, SetStatusCracha] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -162,6 +162,7 @@ const AvaDesempenho = () => {
     const clear = () => {
         setSelectedData(null);
         setSteps(null);
+        setBarcode(null);
     };
 
     return (

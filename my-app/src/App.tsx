@@ -9,7 +9,7 @@ import TelaInicial from './pages/TelaInicial';
 import { checkTokenValidity } from './utils/checkTokenValidity';
 import Circular from './components/Progress/Circular';
 import Cookies from 'js-cookie';
-import EntregaEPI from './pages/Seguranca/EntregaEPI';
+import EntregaEPI from './pages/Seguranca/EntregaEpi/EntregaEPI';
 import api from './config/axiosConfig';
 
 interface ProtectedRouteProps {

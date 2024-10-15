@@ -14,13 +14,17 @@ const { fifo } = require('../api/TelaInicial/EtiquetaFifo');
 const { comunicados } = require('../api/TelaInicial/Comunicado');
 const authenticateToken = require('../middleware/authMiddleware');
 const { list_ava } = require('../api/AvaDesempenho/listAva');
+const { pedidos_epi } = require('../api/EntregaEPI/pedidosEPI');
+const { entrega_epi } = require('../api/EntregaEPI/entregaEPI');
+const { controle_epi } = require('../api/EntregaEPI/controleEPI');
+const { dep_conta } = require('../api/EntregaEPI/depConta');
 const router = express.Router();
 
 // Public Routes
 router.post('/login', login);
 
 // Protected Routes
-//GET
+// GET
 router.get('/list_form_scrap', authenticateToken, list_form_scrap);
 router.get('/user_data', authenticateToken, user_data);
 router.get('/ava_type', authenticateToken, ava_type);
@@ -31,11 +35,16 @@ router.get('/ace_telas', authenticateToken, ace_telas);
 router.get('/fifo', authenticateToken, fifo);
 router.get('/comunicados', authenticateToken, comunicados);
 router.get('/list_ava', authenticateToken, list_ava);
-//POST
+router.get('/pedidos_epi', authenticateToken, pedidos_epi);
+router.get('/controle_epi', authenticateToken, controle_epi);
+router.get('/dep_conta', authenticateToken, dep_conta);
+// POST
 router.post('/createNewForm', authenticateToken, createNewForm);
 router.post('/createNewFormAva', authenticateToken, createNewFormAva);
-//DELETE
+// DELETE
 router.delete('/delete_scrap/:id', authenticateToken, delete_scrap);
+// PUT
+router.put('/entrega_epi', authenticateToken, entrega_epi);
 
 router.get('/protected', authenticateToken, (req, res) => {
     res.send('Esta é uma rota protegida');

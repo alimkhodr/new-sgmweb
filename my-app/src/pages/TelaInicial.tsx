@@ -113,7 +113,8 @@ const TelaInicial = () => {
             gap={2}
           >
             <Typography
-              variant="h3">
+              variant="h4"
+              >
               Fifo do mês
             </Typography>
             <Box
@@ -128,15 +129,15 @@ const TelaInicial = () => {
               borderRadius={10}
             >
               <Box
-                height={45}
-                width={55}
+                height={30}
+                width={30}
                 bgcolor={fifo}
                 borderRadius={10}
               >
 
               </Box>
               <Typography
-                variant="h3">
+                variant="h4">
                 {month.toUpperCase()}
               </Typography>
             </Box>
