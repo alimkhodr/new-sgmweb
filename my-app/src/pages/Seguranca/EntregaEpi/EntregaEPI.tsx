@@ -34,6 +34,10 @@ const EntregaEPI = () => {
   const [desc, setDesc] = useState<string>('');
   const [contaOptions, setContaOptions] = useState<string[]>([]);
   const [conta, setConta] = useState<string>('');
+  const [area, setArea] = useState<string>('');
+  const [areaOptions, setAreaOptions] = useState<string[]>([]);
+  const [secao, setSecao] = useState<string>('');
+  const [secaoOptions, setSecaoOptions] = useState<string[]>([]);
   const [selectedData, setSelectedData] = useState<Data | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [qtd, setQtd] = useState<string>('');
@@ -59,10 +63,14 @@ const EntregaEPI = () => {
       setQtd(selectedData.QTD);
       setDesc(selectedData.DESCRICAO);
       setConta(selectedData.CONTA);
+      setArea(selectedData.AREA);
+      setSecao(selectedData.SECAO);
       setItem(selectedData.ITEM);
       setSubconta(selectedData.SUBCONTA)
       fetchItems();
       fetchConta();
+      fetchArea();
+      fetchSecao();
     }
   }, [selectedData]);
 
@@ -136,12 +144,47 @@ const EntregaEPI = () => {
   };
 
 
+  const fetchArea = async () => {
+    try {
+      const response = await api.get('/auth/area_epi', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const area = response.data.map((row: any) => row.AEPI_DESCRICAO);
+      setAreaOptions(area);
+
+    } catch (error) {
+      console.error('Erro ao buscar areas:', error);
+      setSnackbarMessage('Erro ao buscar opções de areas');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const fetchSecao = async () => {
+    try {
+      const response = await api.get('/auth/dep_secao', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const secao = response.data.map((row: any) => row.DEP_SECAO);
+      setSecaoOptions(secao);
+
+    } catch (error) {
+      console.error('Erro ao buscar seção:', error);
+      setSnackbarMessage('Erro ao buscar opções de seções');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
+
+
   const updateEntrega = async () => {
     try {
       if (barcode && selectedData?.ID && qtd) {
         setLoading(true);
 
-        const response = await api.put('/auth/entrega_epi', { qtd: qtd, id: selectedData.ID, item: item }, {
+        const response = await api.put('/auth/entrega_epi', { qtd: qtd, id: selectedData.ID, item: item, secao: secao, area: area }, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -256,6 +299,15 @@ const EntregaEPI = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
+                    id="turno"
+                    label="Turno"
+                    value={selectedData?.TURNO || ''}
+                    disabled
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
                     id="data"
                     label="Data"
                     value={selectedData?.DATA || ''}
@@ -274,22 +326,26 @@ const EntregaEPI = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    id="quantidade"
-                    label="Quantidade"
-                    value={qtd}
+                    id="subconta"
+                    label="Sub-Conta"
+                    value={subconta}
+                    disabled
                     fullWidth
-                    type="number"
-                    onChange={(e) => { let value = e.target.value; setQtd(value && parseInt(value) >= 0 ? value : ''); }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     id="area"
                     label="Área"
-                    value={selectedData?.AREA || ''}
-                    disabled
+                    value={area}
+                    select
+                    onChange={(e) => setArea(e.target.value)}
                     fullWidth
-                  />
+                  >
+                    {areaOptions.map((areaOption) => (
+                      <MenuItem key={areaOption} value={areaOption}>{areaOption}</MenuItem>
+                    ))}
+                  </TextField>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -307,29 +363,26 @@ const EntregaEPI = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    id="subconta"
-                    label="Sub-Conta"
-                    value={subconta}
-                    disabled
+                    id="secao"
+                    label="Seção"
+                    value={secao}
+                    select
+                    onChange={(e) => setSecao(e.target.value)}
                     fullWidth
-                  />
+                  >
+                    {secaoOptions.map((secaoOption) => (
+                      <MenuItem key={secaoOption} value={secaoOption}>{secaoOption}</MenuItem>
+                    ))}
+                  </TextField>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    id="area"
-                    label="Área"
-                    value={selectedData?.AREA || ''}
-                    disabled
+                    id="quantidade"
+                    label="Quantidade"
+                    value={qtd}
                     fullWidth
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    id="turno"
-                    label="Turno"
-                    value={selectedData?.TURNO || ''}
-                    disabled
-                    fullWidth
+                    type="number"
+                    onChange={(e) => { let value = e.target.value; setQtd(value && parseInt(value) >= 0 ? value : ''); }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12}>
@@ -370,7 +423,6 @@ const EntregaEPI = () => {
               <StyledButton
                 // onClick={createNewForm}
                 loading={isLoading}
-                loadingPosition="end"
                 variant="contained"
                 onClick={updateEntrega}
                 disabled={checkDisabled()}

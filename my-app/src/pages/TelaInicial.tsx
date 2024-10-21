@@ -113,26 +113,26 @@ const TelaInicial = () => {
             gap={2}
           >
             <Typography
-              variant="h4"
+              variant="h3"
               >
               Fifo do mês
             </Typography>
             <Box
               bgcolor={theme.palette.primary.main}
               color={theme.palette.primary.contrastText}
-              p={'10px 20px'}
+              p={'15px 30px'}
               display={'flex'}
               justifyContent={'center'}
               flexDirection={'row'}
               alignItems={'center'}
-              gap={1}
-              borderRadius={10}
+              gap={2}
+              borderRadius={8}
             >
               <Box
                 height={30}
-                width={30}
+                width={50}
                 bgcolor={fifo}
-                borderRadius={10}
+                borderRadius={5}
               >
 
               </Box>

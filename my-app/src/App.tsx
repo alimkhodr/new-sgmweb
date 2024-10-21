@@ -11,6 +11,7 @@ import Circular from './components/Progress/Circular';
 import Cookies from 'js-cookie';
 import EntregaEPI from './pages/Seguranca/EntregaEpi/EntregaEPI';
 import api from './config/axiosConfig';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 interface ProtectedRouteProps {
   children: JSX.Element;
@@ -99,6 +100,14 @@ function App() {
             element={
               <ProtectedRoute requiredTelaIds={[250, 99]} telas={telas}>
                 <EntregaEPI />
+              </ProtectedRoute>
+            }
+          />
+                    <Route
+            path="Dashboard"
+            element={
+              <ProtectedRoute requiredTelaIds={[99, 99]} telas={telas}>
+                <Dashboard />
               </ProtectedRoute>
             }
           />

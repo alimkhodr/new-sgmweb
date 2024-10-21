@@ -1,4 +1,4 @@
-import { Engineering, Security } from '@mui/icons-material';
+import { Dashboard, Engineering, QueryStats, Security } from '@mui/icons-material';
 import FactoryIcon from '@mui/icons-material/Factory';
 import RecyclingIcon from '@mui/icons-material/Recycling';
 import ThumbsUpDownIcon from '@mui/icons-material/ThumbsUpDown';
@@ -33,6 +33,19 @@ export const menuConfig = [
         icon: <Engineering />,
         route: '/EntregaEPI',
         telaId: 250,
+      },
+    ],
+  },
+  {
+    text: 'Consulta',
+    icon: <QueryStats />,
+    route: '/',
+    subItems: [
+      {
+        text: 'Dashboard',
+        icon: <Dashboard />,
+        route: '/Dashboard',
+        telaId: 99,
       },
     ],
   },

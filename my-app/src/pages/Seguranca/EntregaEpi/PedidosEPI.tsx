@@ -3,11 +3,11 @@ import VirtualizedTable from '../../../components/Tables/VirtualizedTable/Virtua
 import 'dayjs/locale/pt-br';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-import { Box } from '@mui/system';
+import { Box, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import Alert from '../../../components/Alerts/AlertSnackbar';
-import { IconButton } from '@mui/material';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import api from '../../../config/axiosConfig';
+import { Delete } from '@mui/icons-material';
 
 interface Data {
     [key: string]: any;
@@ -24,6 +24,7 @@ const predefinedColumns = [
     { width: 80, label: 'ÁREA', dataKey: 'AREA' },
     { width: 80, label: 'TURNO', dataKey: 'TURNO' },
     { width: 50, label: '', dataKey: 'RUN' },
+    { width: 50, label: '', dataKey: 'DELETE' },
 ];
 
 interface PedidosProps {
@@ -37,6 +38,8 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
     const [columns] = useState(predefinedColumns);
     const [rows, setRows] = useState<Data[]>([]);
+    const [openDialog, setOpenDialog] = useState(false); // State para abrir diálogo
+    const [rowToDelete, setRowToDelete] = useState<Data | null>(null); // Estado para armazenar o item a ser deletado
     const token = Cookies.get('token');
     const clear = Cookies.get('clear');
 
@@ -91,6 +94,13 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
                             >
                                 <PlayCircleIcon />
                             </IconButton>,
+                        DELETE:
+                            <IconButton
+                                aria-label="delete"
+                                onClick={() => handleOpenDialog(row)}
+                            >
+                                <Delete />
+                            </IconButton>,
                     };
                 }
                 return null;
@@ -105,6 +115,41 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
         }
     };
 
+    const handleOpenDialog = (row: Data) => {
+        setRowToDelete(row);
+        console.log('row:', row)
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        setRowToDelete(null);
+    };
+
+    const handleRecusa = async () => {
+        if (rowToDelete?.EPI_CODIGO) {
+            try {
+                const response = await api.put('/auth/recusa_epi', {id: rowToDelete.EPI_CODIGO}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+          
+                  if (response.status === 200) {
+                    setSnackbarMessage('Item recusado com sucesso!');
+                    setSnackbarSeverity('success');
+                    setSnackbarOpen(true);
+                    handleCloseDialog();
+                  }
+                setRows(prevRows => prevRows.filter(row => row?.ID !== rowToDelete?.EPI_CODIGO));
+
+            } catch (error) {
+                console.error('Erro ao deletar o item:', error);
+                setSnackbarMessage('Erro ao deletar o item');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+            }
+        }
+    };
+
     return (
         <Box display={'flex'} flexDirection={"column"} gap={2}>
             <VirtualizedTable columns={columns} data={rows} />
@@ -114,6 +159,27 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
                 message={snackbarMessage}
                 severity={snackbarSeverity}
             />
+
+            {/* Diálogo de Confirmação */}
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+            >
+                <DialogTitle>{"Recusar pedido"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Tem certeza que deseja recusar o item {rowToDelete?.EPI_ITEM}?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
+                        Não
+                    </Button>
+                    <Button onClick={handleRecusa} sx={{ fontWeight: 'bold' }} color="primary" autoFocus>
+                        Sim
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
