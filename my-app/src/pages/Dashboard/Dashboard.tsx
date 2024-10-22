@@ -1,9 +1,9 @@
 import { InsertInvitation } from '@mui/icons-material';
-import { Button, IconButton, MenuItem, Modal, TextField, Typography } from '@mui/material';
+import { Button, IconButton, MenuItem, TextField, Typography } from '@mui/material';
 import { Box, Grid } from '@mui/system';
 import { useState } from 'react';
 import theme from '../../theme';
-import Shortcuts from '../../components/Date/Shortcuts';
+import Shortcuts from '../../components/Date/DateRanger';
 
 const Dashboard = () => {
     const today = new Date();
@@ -13,16 +13,12 @@ const Dashboard = () => {
     const [selectedDate, setSelectedDate] = useState({ day: currentDay.toString(), month: (currentMonth + 1).toString(), year: currentYear.toString() });
     const [selectedDateRange, setSelectedDateRange] = useState<{ start: string, end: string }>();
     const [dateToDate, setDateToDate] = useState(false);
-
-    const [open, setOpen] = useState(false);
-    const OpenModal = () => setOpen(true);
-    const CloseModal = () => setOpen(false);
+    const [openModal, setOpenModal] = useState(false);
 
     const handleDateRangeSelection = (startDate: string, endDate: string) => {
         setSelectedDateRange({ start: startDate, end: endDate });
         console.log('Intervalo selecionado:', startDate, 'a', endDate);
-        setDateToDate(true)
-        CloseModal();
+        setDateToDate(true);
     };
 
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -35,20 +31,6 @@ const Dashboard = () => {
                 : (day <= currentDay ? theme.palette.success.main : theme.palette.grey[500])
         };
     });
-
-    const styleModal = {
-        position: 'absolute' as 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        bgcolor: 'background.paper',
-        border: 'none',
-        boxShadow: 24,
-        pt: 2,
-        px: 4,
-        pb: 3,
-        borderRadius: 2
-    };
 
     return (
         <Grid
@@ -99,7 +81,7 @@ const Dashboard = () => {
                     <IconButton
                         aria-label="date"
                         size="large"
-                        onClick={OpenModal}
+                        onClick={() => setOpenModal(true)} // Abre o modal ao clicar no ícone
                     >
                         <InsertInvitation fontSize="small" />
                     </IconButton>
@@ -198,20 +180,12 @@ const Dashboard = () => {
                 </Grid>
             </Grid>
 
-            {/* Modal para o scanner */}
-            <Modal
-                open={open}
-                onClose={CloseModal}
-                aria-labelledby="child-modal-title"
-                aria-describedby="child-modal-description"
-            >
-                <Box sx={{ ...styleModal }}>
-                    <Shortcuts
-                        onDateRangeSelected={handleDateRangeSelection}
-                        onCloseModal={CloseModal}
-                    />
-                </Box>
-            </Modal>
+            {/* Shortcuts modal */}
+            <Shortcuts
+                onDateRangeSelected={handleDateRangeSelection}
+                onCloseModal={() => setOpenModal(false)}
+                open={openModal} // Controla a abertura do modal
+            />
         </Grid>
     );
 };
