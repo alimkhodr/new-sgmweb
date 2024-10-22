@@ -7,7 +7,7 @@ import { Box, IconButton, Dialog, DialogActions, DialogContent, DialogContentTex
 import Alert from '../../../components/Alerts/AlertSnackbar';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import api from '../../../config/axiosConfig';
-import { Delete } from '@mui/icons-material';
+import { Cancel } from '@mui/icons-material';
 
 interface Data {
     [key: string]: any;
@@ -99,7 +99,7 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
                                 aria-label="delete"
                                 onClick={() => handleOpenDialog(row)}
                             >
-                                <Delete />
+                                <Cancel />
                             </IconButton>,
                     };
                 }
