@@ -30,7 +30,8 @@ const pedidos_epi = async (req, res) => {
                 EPI.EPI_DATA >= DATEADD(WEEK, DATEDIFF(WEEK, 0, GETDATE()) - 2, 0)
                 AND EPI.EPI_DATA < DATEADD(WEEK, DATEDIFF(WEEK, 0, GETDATE()) + 1, 0)
                 AND EPI.EPI_DATA_ENTREGA IS NULL
-                AND EPI.EPI_FLAG = 2;
+                AND EPI.EPI_FLAG = 2
+                ORDER BY EPI.EPI_DATA DESC;
             `);
 
         res.json(result.recordset);
