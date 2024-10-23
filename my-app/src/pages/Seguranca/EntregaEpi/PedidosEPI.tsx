@@ -1,45 +1,31 @@
-// my-app/src/pages/Manufatura/AvaDesenpenho/Avaliacoes.tsx
-import VirtualizedTable from '../../../components/Tables/VirtualizedTable/VirtualizedTable';
-import 'dayjs/locale/pt-br';
+// my-app/src/pages/Seguranca/EntregaEpi/PedidosEPI.tsx
+import * as React from 'react';
 import { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import { Box, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
-import Alert from '../../../components/Alerts/AlertSnackbar';
+import { IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import Cancel from '@mui/icons-material/Cancel';
+import Cookies from 'js-cookie';
+import Alert from '../../../components/Alerts/AlertSnackbar';
 import api from '../../../config/axiosConfig';
-import { Cancel } from '@mui/icons-material';
+import DataGridTable from '../../../components/Tables/DataGrid/DataGridTable';
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 
 interface Data {
     [key: string]: any;
 }
-
-//COLUNAS
-const predefinedColumns = [
-    { width: 80, label: 'REGISTRO', dataKey: 'REGISTRO' },
-    { width: 90, label: 'NOME', dataKey: 'NOME' },
-    { width: 90, label: 'DATA', dataKey: 'DATA' },
-    { width: 80, label: 'ITEM', dataKey: 'ITEM' },
-    { width: 110, label: 'DESCRIÇÃO', dataKey: 'DESCRICAO' },
-    { width: 50, label: 'QTD', dataKey: 'QTD' },
-    { width: 80, label: 'ÁREA', dataKey: 'AREA' },
-    { width: 80, label: 'TURNO', dataKey: 'TURNO' },
-    { width: 50, label: '', dataKey: 'RUN' },
-    { width: 50, label: '', dataKey: 'DELETE' },
-];
 
 interface PedidosProps {
     onRowSelect: (data: Data) => void;
 }
 
 const Pedidos = ({ onRowSelect }: PedidosProps) => {
-    //CONSTANTES
+    // CONSTANTES
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
-    const [columns] = useState(predefinedColumns);
     const [rows, setRows] = useState<Data[]>([]);
-    const [openDialog, setOpenDialog] = useState(false); // State para abrir diálogo
-    const [rowToDelete, setRowToDelete] = useState<Data | null>(null); // Estado para armazenar o item a ser deletado
+    const [openDialog, setOpenDialog] = useState(false);
+    const [rowToDelete, setRowToDelete] = useState<Data | null>(null);
     const token = Cookies.get('token');
     const clear = Cookies.get('clear');
 
@@ -51,27 +37,24 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
         listAva();
     }, [clear]);
 
-    //LISTAR FORMULARIO
+    // LISTAR FORMULARIO
     const listAva = async (event?: React.FormEvent) => {
         if (event) event.preventDefault();
         try {
             const response = await api.get<Data[]>('/auth/pedidos_epi', {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
-            const formattedData = response.data.map(row => {
+            const formattedData = response.data.map((row) => {
                 const data = row.EPI_DATA ? row.EPI_DATA.split('T')[0] : null;
                 if (row.EPI_CODIGO != null) {
                     return {
-                        ID: row.EPI_CODIGO,
+                        id: row.EPI_CODIGO,
                         REGISTRO: row.EPI_REGISTRO_FUN,
                         NOME: row.FUN_NOME,
                         DATA: data,
                         ITEM: row.EPI_ITEM,
                         DESCRICAO: row.EPI_DESCRICAO,
                         QTD: row.EPI_QUANTIDADE,
-                        CONTA: row.EPI_CONTA,
-                        SUBCONTA: row.EPI_SUB_CONTA,
-                        SECAO: row.EPI_SECAO,
                         AREA: row.EPI_AREA,
                         TURNO: `${row.EPI_TURNO}° Turno`,
                         RUN:
@@ -95,16 +78,13 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
                                 <PlayCircleIcon />
                             </IconButton>,
                         DELETE:
-                            <IconButton
-                                aria-label="delete"
-                                onClick={() => handleOpenDialog(row)}
-                            >
+                            <IconButton aria-label="delete" onClick={() => handleOpenDialog(row)}>
                                 <Cancel />
                             </IconButton>,
                     };
                 }
                 return null;
-            }).filter(row => row !== null);
+            }).filter((row) => row !== null);
             Cookies.remove('clear');
             setRows(formattedData);
         } catch (error) {
@@ -117,7 +97,6 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
 
     const handleOpenDialog = (row: Data) => {
         setRowToDelete(row);
-        console.log('row:', row)
         setOpenDialog(true);
     };
 
@@ -129,30 +108,54 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
     const handleRecusa = async () => {
         if (rowToDelete?.EPI_CODIGO) {
             try {
-                const response = await api.put('/auth/recusa_epi', {id: rowToDelete.EPI_CODIGO}, {
-                    headers: { Authorization: `Bearer ${token}` }
-                  });
-          
-                  if (response.status === 200) {
+                const response = await api.put('/auth/recusa_epi', { id: rowToDelete.EPI_CODIGO }, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (response.status === 200) {
                     setSnackbarMessage('Item recusado com sucesso!');
                     setSnackbarSeverity('success');
                     setSnackbarOpen(true);
                     handleCloseDialog();
-                  }
-                setRows(prevRows => prevRows.filter(row => row?.ID !== rowToDelete?.EPI_CODIGO));
-
+                }
+                setRows((prevRows) => prevRows.filter((row) => row?.id !== rowToDelete?.EPI_CODIGO));
             } catch (error) {
-                console.error('Erro ao deletar o item:', error);
-                setSnackbarMessage('Erro ao deletar o item');
+                console.error('Erro ao recusar o item:', error);
+                setSnackbarMessage('Erro ao recusar o item');
                 setSnackbarSeverity('error');
                 setSnackbarOpen(true);
             }
         }
     };
 
+    const isMobile = window.innerWidth <= 900;
+    const columns: GridColDef[] = [
+        { field: 'REGISTRO', headerName: 'Registro', width: isMobile ? 140 : undefined, flex: isMobile ? undefined : 1 },
+        { field: 'NOME', headerName: 'Nome', width: isMobile ? 140 : undefined, flex: isMobile ? undefined : 1 },
+        { field: 'DATA', headerName: 'Data', width: isMobile ? 110 : undefined, flex: isMobile ? undefined : 1 },
+        { field: 'ITEM', headerName: 'Item', width: isMobile ? 140 : undefined, flex: isMobile ? undefined : 1 },
+        { field: 'DESCRICAO', headerName: 'Descrição', width: isMobile ? 150 : undefined, flex: isMobile ? undefined : 1 },
+        { field: 'QTD', headerName: 'Qtd', type: 'number', width: isMobile ? 100 : undefined, flex: isMobile ? undefined : 1 },
+        { field: 'AREA', headerName: 'Área', width: isMobile ? 140 : undefined, flex: isMobile ? undefined : 1 },
+        { field: 'TURNO', headerName: 'Turno', width: isMobile ? 120 : undefined, flex: isMobile ? undefined : 1 },
+        {
+            field: 'RUN',
+            headerName: '',
+            width: 40,
+            renderCell: (params: GridRenderCellParams) => params.row.RUN
+        },
+        {
+            field: 'DELETE',
+            headerName: '',
+            width: 40,
+            renderCell: (params: GridRenderCellParams) => params.row.DELETE
+        },
+    ];
+
+
     return (
-        <Box display={'flex'} flexDirection={"column"} gap={2}>
-            <VirtualizedTable columns={columns} data={rows} />
+        <>
+            <DataGridTable rows={rows} columns={columns} /> {/* Usando o DataGridComponent */}
             <Alert
                 open={snackbarOpen}
                 handleClose={CloseSnackbar}
@@ -161,10 +164,7 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
             />
 
             {/* Diálogo de Confirmação */}
-            <Dialog
-                open={openDialog}
-                onClose={handleCloseDialog}
-            >
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <DialogTitle>{"Recusar pedido"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -180,7 +180,7 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Box>
+        </>
     );
 };
 

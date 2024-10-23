@@ -257,6 +257,7 @@ const EntregaEPI = () => {
         sx={{ p: 5, marginBottom: 5, marginTop: 12 }}
         bgcolor={theme.palette.background.paper}
         borderRadius={2}
+        maxWidth='90vw'
       >
         <Grid padding={'0 0 30px 0'} display={"flex"} flexDirection={"row"} gap={1}>
           <Box display={selectedData ? 'flex' : 'none'} >
@@ -273,7 +274,7 @@ const EntregaEPI = () => {
           </Typography>
         </Grid>
         <Grid display={"flex"} flexDirection={"column"} gap={2}>
-          <Box display={selectedData ? 'none' : 'flex'} flexDirection={"column"} gap={2}>
+          <Box display={selectedData ? 'none' : 'flex'} flexDirection={"column"}>
             <PedidosEPI onRowSelect={setSelectedData} />
           </Box>
           <Box display={selectedData ? 'flex' : 'none'} flexDirection={"column"} gap={2}>
