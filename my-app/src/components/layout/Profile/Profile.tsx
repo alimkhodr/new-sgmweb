@@ -13,6 +13,8 @@ import api from '../../../config/axiosConfig';
 import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
+import MaterialUISwitch from '../../Switch/MaterialUISwitch';
+import { Contrast } from '@mui/icons-material';
 
 export default function AccountMenu() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -20,8 +22,16 @@ export default function AccountMenu() {
     const navigate = useNavigate();
     const [userNome, setUserNome] = useState('Usuário');
     const [userFuncao, setUserFuncao] = useState('Área');
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {setAnchorEl(event.currentTarget);};
-    const handleClose = () => {setAnchorEl(null);};
+    const [themeMode, setThemeMode] = useState(Cookies.get('theme') || 'light'); // Estado para o tema
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     const token = Cookies.get('token');
 
     const handleLogout = () => {
@@ -48,8 +58,16 @@ export default function AccountMenu() {
         }
         fetchUserName();
     }, [token]);
-    
+
     const firstLetter = userNome && userNome[0].toUpperCase();
+
+    // Função para alternar o tema
+    const toggleTheme = () => {
+        const newTheme = themeMode === 'light' ? 'dark' : 'light';
+        setThemeMode(newTheme);
+        Cookies.set('theme', newTheme);
+        window.location.reload();
+    };
 
     return (
         <React.Fragment>
@@ -72,7 +90,6 @@ export default function AccountMenu() {
                 id="account-menu"
                 open={open}
                 onClose={handleClose}
-                onClick={handleClose}
                 PaperProps={{
                     elevation: 0,
                     sx: {
@@ -103,7 +120,7 @@ export default function AccountMenu() {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
                 <MenuItem>
-                    <Avatar >{firstLetter}</Avatar>
+                    <Avatar>{firstLetter}</Avatar>
                     <Box display={'flex'} flexDirection={'column'}>
                         <Typography variant="subtitle1" lineHeight={1.5}>
                             {userNome}
@@ -119,6 +136,19 @@ export default function AccountMenu() {
                         <Logout fontSize="small" />
                     </ListItemIcon>
                     Logout
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={(e) => e.stopPropagation()}>
+                    <ListItemIcon>
+                        <Contrast fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemIcon>
+                        <MaterialUISwitch
+                            checked={themeMode === 'dark'}
+                            onChange={toggleTheme}
+                        />
+                    </ListItemIcon>
+
                 </MenuItem>
             </Menu>
         </React.Fragment>

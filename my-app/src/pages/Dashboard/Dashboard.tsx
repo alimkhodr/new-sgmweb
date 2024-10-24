@@ -71,7 +71,7 @@ const Dashboard = () => {
                     bgcolor={theme.palette.background.paper}
                     borderRadius={2}
                     border={'1px solid'}
-                    borderColor={theme.palette.grey[400]}
+                    borderColor={theme.palette.primary.light}
                     gap={0.4}
                     p={1}
                     height="100%"
@@ -93,7 +93,7 @@ const Dashboard = () => {
                                 minWidth: 0,
                                 width: '100%',
                                 bgcolor: day.bgcolor,
-                                color: theme.palette.primary.contrastText,
+                                color: theme.palette.primary.main,
                                 padding: 0
                             }}
                             onClick={() => {
@@ -125,7 +125,7 @@ const Dashboard = () => {
                         bgcolor={theme.palette.background.paper}
                         borderRadius={2}
                         border={'1px solid'}
-                        borderColor={theme.palette.grey[400]}
+                        borderColor={theme.palette.primary.light}
                         gap={2}
                         p={1}
                         width="100%"

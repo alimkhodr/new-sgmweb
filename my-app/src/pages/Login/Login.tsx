@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -22,6 +22,12 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('info');
+
+    useEffect(() => {
+        if (!Cookies.get('theme')) {
+            Cookies.set('theme', 'light');
+        }
+    }, []);
 
     const handleCloseSnackbar = () => { setSnackbarOpen(false); };
 

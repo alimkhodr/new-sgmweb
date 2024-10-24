@@ -6,7 +6,7 @@ import theme from '../../../theme';
 // import { SupportAgent } from '@mui/icons-material';
 
 const StyledFooter = styled("div")(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
+  backgroundColor: theme.palette.primary.dark,
   padding: "20px 0",
   borderTop: `1px solid ${theme.palette.divider}`,
   width: "-webkit-fill-available",
@@ -24,7 +24,7 @@ const StyledHr = styled("hr")(() => ({
 
 const IconLink = styled("a")(() => ({
   textDecoration: 'none',
-  color: theme.palette.primary.contrastText,
+  color: 'white',
   borderRadius: "10px",
   padding: "5px",
   alignItems: "center",
@@ -72,7 +72,7 @@ const Footer = () => {
         <StyledHr />
         <Grid container alignItems="center">
           <Grid item xs={12} sm={6} display="flex" justifyContent={{ xs: "center", sm: "left" }}>
-            <Typography variant="body2" color="primary.contrastText">
+            <Typography variant="body2" color='white'>
               © 2024 Aptiv. All rights reserved
             </Typography>
           </Grid>

@@ -13,16 +13,16 @@ import { useEffect, useState } from "react";
 const SwiperContainer = styled(Box)({
   '.swiper-button-next:after': {
     content: '"next"',
-    color: theme.palette.primary.main,
+    color: theme.palette.primary.dark,
     fontSize: "30px"
   },
   '.swiper-button-prev:after': {
     content: '"prev"',
-    color: theme.palette.primary.main,
+    color: theme.palette.primary.dark,
     fontSize: "30px"
   },
   '.swiper-pagination-bullet': {
-    background: theme.palette.primary.main,
+    background: theme.palette.primary.dark,
     width: "5px",
     height: "5px"
   },
@@ -118,8 +118,8 @@ const TelaInicial = () => {
               Fifo do mês
             </Typography>
             <Box
-              bgcolor={theme.palette.primary.main}
-              color={theme.palette.primary.contrastText}
+              bgcolor={theme.palette.primary.dark}
+              color='white'
               p={'15px 30px'}
               display={'flex'}
               justifyContent={'center'}

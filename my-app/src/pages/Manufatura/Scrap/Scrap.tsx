@@ -423,7 +423,7 @@ const Scrap = () => {
                             alignItems={'center'}
                             flexDirection={{ xs: "column", md: "row" }}
                             sx={{
-                                border: `1px solid ${theme.palette.grey[400]}`,
+                                border: `1px solid ${theme.palette.primary.light}`,
                                 borderRadius: "5px",
                             }}
                             gap={2}

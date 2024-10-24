@@ -32,7 +32,7 @@ const VirtuosoTableComponents: TableComponents<Data> = {
       ref={ref}
       sx={{
         boxShadow: 'none',
-      border: `1px solid ${theme.palette.grey[400]}`,
+      border: `1px solid ${theme.palette.primary.light}`,
       }}
     />
   )),
