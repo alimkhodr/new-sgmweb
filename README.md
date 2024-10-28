@@ -1,5 +1,5 @@
-# NEW SGM
->Sistema Gerenciador de Manufatura
+<p align="center"><img src="https://github.com/aptivjam/new-sgmweb/blob/master/my-app/src/assets/images/logo/sgmweb.svg" width="20%"></p>
+<p align="center">Sistema Gerenciador de Manufatura</p>
 
 ## Pré-requisitos
 - [Node.js](https://nodejs.org/en/)
@@ -67,5 +67,6 @@ certs
 
 docker-compose.yml
 >Arquivo onde junta `Dockerfile.backend` e `Dockerfile.my-app` na docker.
-
+<br>
+<p align="center"><img src="https://github.com/user-attachments/assets/bb4c0c56-bf3e-4471-9d88-8056135c8f9f" width="20%"></p>
 
