@@ -1,5 +1,5 @@
 <p align="center"><img src="https://github.com/aptivjam/new-sgmweb/blob/master/my-app/src/assets/images/logo/sgmweb.svg" width="20%"></p>
-<p align="center">Sistema Gerenciador de Manufatura</p>
+<p align="center">Sistema de Gestão de Manufatura - Web</p>
 
 ## Pré-requisitos
 - [Node.js](https://nodejs.org/en/)
