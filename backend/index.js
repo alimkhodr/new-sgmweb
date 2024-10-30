@@ -8,13 +8,13 @@ const fs = require('fs');
 const app = express();
 const port = 3000;
 
+// Gerenciar front que pode acessar
 // const allowedOrigins = [
 //   'http://10.251.42.250:5173',
 //   'http://192.168.0.160:5173',
 //   'http://localhost:5173',
 //   'https://10.251.42.75',
 // ];
-
 // app.use(cors({
 //   origin: function (origin, callback) {
 //     if (!origin || allowedOrigins.indexOf(origin) !== -1) {

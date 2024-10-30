@@ -9,6 +9,7 @@ import api from '../config/axiosConfig';
 import Cookies from 'js-cookie';
 import Alert from '../components/Alerts/AlertSnackbar';
 import { useEffect, useState } from "react";
+import { Label } from "@mui/icons-material";
 
 const SwiperContainer = styled(Box)({
   '.swiper-button-next:after': {
@@ -90,7 +91,7 @@ const TelaInicial = () => {
       setSnackbarOpen(true);
     }
   };
-  
+
 
   return (
     <SwiperContainer>
@@ -114,7 +115,7 @@ const TelaInicial = () => {
           >
             <Typography
               variant="h3"
-              >
+            >
               Fifo do mês
             </Typography>
             <Box
@@ -125,17 +126,10 @@ const TelaInicial = () => {
               justifyContent={'center'}
               flexDirection={'row'}
               alignItems={'center'}
-              gap={2}
-              borderRadius={8}
+              gap={1}
+              borderRadius={2}
             >
-              <Box
-                height={30}
-                width={50}
-                bgcolor={fifo}
-                borderRadius={5}
-              >
-
-              </Box>
+              <Label sx={{ color: fifo, fontSize: 40 }}/>
               <Typography
                 variant="h4">
                 {month.toUpperCase()}

@@ -43,6 +43,7 @@ const EntregaEPI = () => {
   const [qtd, setQtd] = useState<string>('');
   const [item, setItem] = useState<string>('');
   const [subconta, setSubconta] = useState<string>('');
+  const [ca, setCa] = useState<string>('');
   const [barcode, setBarcode] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [statusCracha, SetStatusCracha] = useState(false);
@@ -66,7 +67,8 @@ const EntregaEPI = () => {
       setArea(selectedData.AREA);
       setSecao(selectedData.SECAO);
       setItem(selectedData.ITEM);
-      setSubconta(selectedData.SUBCONTA)
+      setSubconta(selectedData.SUBCONTA);
+      setCa(selectedData.CA);
       fetchItems();
       fetchConta();
       fetchArea();
@@ -92,12 +94,15 @@ const EntregaEPI = () => {
     if (desc) {
       const foundItem = itemsData.find(item => item.descricao === desc);
       const foundSubconta = itemsData.find(subConta => subConta.descricao === desc);
-
+      const foundCa = itemsData.find(ca => ca.descricao === desc);
       if (foundItem) {
         setItem(foundItem.item);
       }
       if (foundSubconta) {
         setSubconta(foundSubconta.subConta);
+      }
+      if (foundCa) {
+        setCa(foundCa.ca);
       }
     }
   }, [desc]);
@@ -112,7 +117,8 @@ const EntregaEPI = () => {
       let fetchedItemsData = response.data.map((row: any) => ({
         descricao: row.CEPI_DESCRICAO,
         item: row.CEPI_CODIGO,
-        subConta: row.CEPI_CONTA
+        subConta: row.CEPI_CONTA,
+        ca: row.CEPI_CA
       }));
 
       setItemsData(fetchedItemsData);
@@ -184,7 +190,7 @@ const EntregaEPI = () => {
       if (barcode && selectedData?.ID && qtd) {
         setLoading(true);
 
-        const response = await api.put('/auth/entrega_epi', { qtd: qtd, id: selectedData.ID, item: item, secao: secao, area: area }, {
+        const response = await api.put('/auth/entrega_epi', { qtd: qtd, id: selectedData.ID, item: item, secao: secao, area: area, ca: ca }, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -200,6 +206,7 @@ const EntregaEPI = () => {
       setSnackbarMessage('Erro ao entregar EPI.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -336,6 +343,15 @@ const EntregaEPI = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
+                    id="ca"
+                    label="C.A"
+                    value={ca}
+                    disabled
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
                     id="area"
                     label="Área"
                     value={area}
@@ -386,7 +402,7 @@ const EntregaEPI = () => {
                     onChange={(e) => { let value = e.target.value; setQtd(value && parseInt(value) >= 0 ? value : ''); }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={12}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     id="descricao"
                     label="Descrição"

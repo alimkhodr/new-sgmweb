@@ -16,7 +16,9 @@ const authenticateToken = require('../middleware/authMiddleware');
 const { list_ava } = require('../api/AvaDesempenho/listAva');
 const { pedidos_epi } = require('../api/EntregaEPI/pedidosEPI');
 const { entrega_epi } = require('../api/EntregaEPI/entregaEPI');
+const { update_epi } = require('../api/EntregaEPI/updateEPI');
 const { recusa_epi } = require('../api/EntregaEPI/recusaEPI');
+const { desativa_epi } = require('../api/EntregaEPI/desativaEPI');
 const { controle_epi } = require('../api/EntregaEPI/controleEPI');
 const { dep_conta } = require('../api/Departamento/depConta');
 const { dep_secao } = require('../api/Departamento/depSecao');
@@ -51,6 +53,8 @@ router.delete('/delete_scrap/:id', authenticateToken, delete_scrap);
 // PUT
 router.put('/entrega_epi', authenticateToken, entrega_epi);
 router.put('/recusa_epi', authenticateToken, recusa_epi);
+router.put('/desativa_epi', authenticateToken, desativa_epi);
+router.put('/update_epi', authenticateToken, update_epi);
 
 router.get('/protected', authenticateToken, (req, res) => {
     res.send('Esta é uma rota protegida');

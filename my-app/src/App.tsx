@@ -10,6 +10,7 @@ import { checkTokenValidity } from './utils/checkTokenValidity';
 import Circular from './components/Progress/Circular';
 import Cookies from 'js-cookie';
 import EntregaEPI from './pages/Seguranca/EntregaEpi/EntregaEPI';
+import EdicaoEPI from './pages/Seguranca/ControleEpi/EdicaoEPI';
 import api from './config/axiosConfig';
 import Dashboard from './pages/Dashboard/Dashboard';
 
@@ -103,7 +104,15 @@ function App() {
               </ProtectedRoute>
             }
           />
-                    <Route
+          <Route
+            path="EdicaoEPI"
+            element={
+              <ProtectedRoute requiredTelaIds={[250, 99]} telas={telas}>
+                <EdicaoEPI />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="Dashboard"
             element={
               <ProtectedRoute requiredTelaIds={[99, 99]} telas={telas}>

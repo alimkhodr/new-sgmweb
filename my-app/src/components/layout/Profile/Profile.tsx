@@ -131,13 +131,6 @@ export default function AccountMenu() {
                     </Box>
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={handleLogout}>
-                    <ListItemIcon>
-                        <Logout fontSize="small" />
-                    </ListItemIcon>
-                    Logout
-                </MenuItem>
-                <Divider />
                 <MenuItem onClick={(e) => e.stopPropagation()}>
                     <ListItemIcon>
                         <Contrast fontSize="small" />
@@ -149,6 +142,13 @@ export default function AccountMenu() {
                         />
                     </ListItemIcon>
 
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                        <Logout fontSize="small" />
+                    </ListItemIcon>
+                    Logout
                 </MenuItem>
             </Menu>
         </React.Fragment>

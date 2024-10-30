@@ -18,7 +18,7 @@ interface PedidosProps {
     onRowSelect: (data: Data) => void;
 }
 
-const Pedidos = ({ onRowSelect }: PedidosProps) => {
+const Estoque = ({ onRowSelect }: PedidosProps) => {
     // CONSTANTES
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -34,46 +34,33 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
     };
 
     useEffect(() => {
-        listAva();
+        listForm();
     }, [clear]);
 
     // LISTAR FORMULARIO
-    const listAva = async (event?: React.FormEvent) => {
+    const listForm = async (event?: React.FormEvent) => {
         if (event) event.preventDefault();
         try {
-            const response = await api.get<Data[]>('/auth/pedidos_epi', {
+            const response = await api.get<Data[]>('/auth/controle_epi', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const formattedData = response.data.map((row) => {
-                const data = row.EPI_DATA ? row.EPI_DATA.split('T')[0] : null;
-                if (row.EPI_CODIGO != null) {
+                if (row.CEPI_CODIGO != null) {
                     return {
-                        id: row.EPI_CODIGO,
-                        REGISTRO: row.EPI_REGISTRO_FUN,
-                        NOME: row.FUN_NOME,
-                        DATA: data,
-                        ITEM: row.EPI_ITEM,
-                        DESCRICAO: row.EPI_DESCRICAO,
-                        QTD: row.EPI_QUANTIDADE,
-                        AREA: row.EPI_AREA,
-                        TURNO: `${row.EPI_TURNO}° Turno`,
+                        id: row.CEPI_ID,
+                        ITEM: row.CEPI_CODIGO,
+                        DESCRICAO: row.CEPI_DESCRICAO,
+                        CONTA: row.CEPI_CONTA,
+                        CA: row.CEPI_CA,
                         RUN:
                             <IconButton
                                 aria-label="run"
                                 onClick={() => onRowSelect({
-                                    ID: row.EPI_CODIGO,
-                                    REGISTRO: row.EPI_REGISTRO_FUN,
-                                    NOME: row.FUN_NOME,
-                                    DATA: data,
-                                    ITEM: row.EPI_ITEM,
-                                    DESCRICAO: row.EPI_DESCRICAO,
-                                    QTD: row.EPI_QUANTIDADE,
-                                    CONTA: row.EPI_CONTA,
-                                    SUBCONTA: row.EPI_SUB_CONTA,
-                                    CA: row.EPI_CA,
-                                    SECAO: row.EPI_SECAO,
-                                    AREA: row.EPI_AREA,
-                                    TURNO: row.EPI_TURNO,
+                                    id: row.CEPI_ID,
+                                    ITEM: row.CEPI_CODIGO,
+                                    DESCRICAO: row.CEPI_DESCRICAO,
+                                    CONTA: row.CEPI_CONTA,
+                                    CA: row.CEPI_CA,
                                 })}
                             >
                                 <PlayCircleIcon />
@@ -96,6 +83,7 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
         }
     };
 
+
     const handleOpenDialog = (row: Data) => {
         setRowToDelete(row);
         setOpenDialog(true);
@@ -107,22 +95,22 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
     };
 
     const handleRecusa = async () => {
-        if (rowToDelete?.EPI_CODIGO) {
+        if (rowToDelete?.CEPI_ID) {
             try {
-                const response = await api.put('/auth/recusa_epi', { id: rowToDelete.EPI_CODIGO }, {
+                const response = await api.put('/auth/desativa_epi', { id: rowToDelete.CEPI_ID }, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
                 if (response.status === 200) {
-                    setSnackbarMessage('Item recusado com sucesso!');
+                    setSnackbarMessage('Item desativado com sucesso!');
                     setSnackbarSeverity('success');
                     setSnackbarOpen(true);
                     handleCloseDialog();
                 }
-                setRows((prevRows) => prevRows.filter((row) => row?.id !== rowToDelete?.EPI_CODIGO));
+                setRows((prevRows) => prevRows.filter((row) => row?.id !== rowToDelete?.CEPI_ID));
             } catch (error) {
-                console.error('Erro ao recusar o item:', error);
-                setSnackbarMessage('Erro ao recusar o item');
+                console.error('Erro ao desativar o item:', error);
+                setSnackbarMessage('Erro ao desativar o item');
                 setSnackbarSeverity('error');
                 setSnackbarOpen(true);
             }
@@ -130,14 +118,10 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
     };
 
     const columns: GridColDef[] = [
-        { field: 'REGISTRO', headerName: 'Registro', flex: 1 },
-        { field: 'NOME', headerName: 'Nome', flex: 1 },
-        { field: 'DATA', headerName: 'Data', flex: 1 },
         { field: 'ITEM', headerName: 'Item', flex: 1 },
         { field: 'DESCRICAO', headerName: 'Descrição', flex: 1 },
-        { field: 'QTD', headerName: 'Qtd', type: 'number', flex: 1 },
-        { field: 'AREA', headerName: 'Área',flex: 1 },
-        { field: 'TURNO', headerName: 'Turno', flex: 1 },
+        { field: 'CONTA', headerName: 'Conta', flex: 1 },
+        { field: 'CA', headerName: 'C.A', flex: 1 },
         {
             field: 'RUN',
             headerName: '',
@@ -165,10 +149,10 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
 
             {/* Diálogo de Confirmação */}
             <Dialog open={openDialog} onClose={handleCloseDialog}>
-                <DialogTitle>{"Recusar pedido"}</DialogTitle>
+                <DialogTitle>{"Desativar Item"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Tem certeza que deseja recusar o item {rowToDelete?.EPI_ITEM}?
+                        Tem certeza que deseja desativar o item {rowToDelete?.CEPI_CODIGO}?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -184,4 +168,4 @@ const Pedidos = ({ onRowSelect }: PedidosProps) => {
     );
 };
 
-export default Pedidos;
+export default Estoque;

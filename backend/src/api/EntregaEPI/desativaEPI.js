@@ -1,11 +1,12 @@
 const { poolPromise } = require('../../config/dbConfig');
 
-const controle_epi = async (req, res) => {
+const desativa_epi = async (req, res) => {
+    const { id } = req.body;
     try {
         const pool = await poolPromise;
         const result = await pool.request()
-            .query(`SELECT * FROM CONTROLE_EPI WHERE CEPI_FLAG = 0`);
-
+            .input('id', id)
+            .query(`UPDATE CONTROLE_EPI SET CEPI_FLAG = 1 WHERE CEPI_ID = @id`);
         res.json(result.recordset);
     } catch (error) {
         console.error('Erro no servidor:', error);
@@ -14,5 +15,5 @@ const controle_epi = async (req, res) => {
 };
 
 module.exports = {
-    controle_epi
+    desativa_epi
 };

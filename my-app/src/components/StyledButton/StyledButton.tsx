@@ -10,9 +10,10 @@ const StyledBtn = styled(Button)(({ theme }) => ({
   boxShadow: 'none',
   backgroundColor: theme.palette.secondary.main,
   color: 'white',
-  transition: 'background-color 0.8s ease',
+  transition: 'background-color 0.8s ease, color 0.8s ease',
   '&:hover': {
     backgroundColor: theme.palette.primary.main,
+    color: theme.palette.secondary.main,
     boxShadow: 'none',
   },
 }));

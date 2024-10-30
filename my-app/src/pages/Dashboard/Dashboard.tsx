@@ -1,6 +1,6 @@
-import { InsertInvitation } from '@mui/icons-material';
-import { Button, IconButton, MenuItem, TextField, Typography } from '@mui/material';
-import { Box, Grid } from '@mui/system';
+import { CheckCircle, InsertInvitation } from '@mui/icons-material';
+import { Button, Chip, FormControlLabel, Icon, IconButton, MenuItem, Paper, Switch, TextField, Typography } from '@mui/material';
+import { Box, color, Grid, Stack, styled } from '@mui/system';
 import { useState } from 'react';
 import theme from '../../theme';
 import Shortcuts from '../../components/Date/DateRanger';
@@ -20,6 +20,12 @@ const Dashboard = () => {
         console.log('Intervalo selecionado:', startDate, 'a', endDate);
         setDateToDate(true);
     };
+
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: theme.palette.success.main,
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    }));
 
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const days = Array.from({ length: daysInMonth }, (_, index) => {
@@ -62,7 +68,6 @@ const Dashboard = () => {
                 gap={2}
                 height="100%"
                 width="100%"
-                overflow="auto"
             >
                 <Grid
                     display={'flex'}
@@ -75,8 +80,6 @@ const Dashboard = () => {
                     gap={0.4}
                     p={1}
                     height="100%"
-                    maxHeight="calc(100vh - 170px)"
-                    overflow="auto"
                 >
                     <IconButton
                         aria-label="date"
@@ -93,7 +96,7 @@ const Dashboard = () => {
                                 minWidth: 0,
                                 width: '100%',
                                 bgcolor: day.bgcolor,
-                                color: theme.palette.primary.main,
+                                color: 'white',
                                 padding: 0
                             }}
                             onClick={() => {
@@ -116,7 +119,6 @@ const Dashboard = () => {
                     gap={2}
                     height="100%"
                     width="100%"
-                    overflow="auto"
                 >
                     <Grid
                         display={'flex'}
@@ -126,18 +128,18 @@ const Dashboard = () => {
                         borderRadius={2}
                         border={'1px solid'}
                         borderColor={theme.palette.primary.light}
+                        justifyContent={'space-between'}
                         gap={2}
                         p={1}
                         width="100%"
-                        maxWidth={"calc(100vw - 160px)"}
-                        overflow="auto"
                     >
                         <TextField
                             id="outlined-select-currency"
-                            select label="Turno"
+                            select label="Linha"
                             defaultValue="1"
                             fullWidth
                             size="small"
+                            sx={{ maxWidth: 1000 }}
                         >
                             <MenuItem value="1">1</MenuItem>
                             <MenuItem value="2">2</MenuItem>
@@ -149,33 +151,41 @@ const Dashboard = () => {
                             defaultValue="1"
                             fullWidth
                             size="small"
+                            sx={{ maxWidth: 200 }}
                         >
-                            <MenuItem value="1">1</MenuItem>
-                            <MenuItem value="2">2</MenuItem>
-                            <MenuItem value="3">3</MenuItem>
+                            <MenuItem value="1">1° Turno</MenuItem>
+                            <MenuItem value="2">2° Turno</MenuItem>
+                            <MenuItem value="3">3° Turno</MenuItem>
                         </TextField>
-                        <TextField
-                            id="outlined-select-currency"
-                            select label="Turno"
-                            defaultValue="1"
-                            fullWidth
-                            size="small"
-                        >
-                            <MenuItem value="1">1</MenuItem>
-                            <MenuItem value="2">2</MenuItem>
-                            <MenuItem value="3">3</MenuItem>
-                        </TextField>
-                        <TextField
-                            id="outlined-select-currency"
-                            select label="Turno"
-                            defaultValue="1"
-                            fullWidth
-                            size="small"
-                        >
-                            <MenuItem value="1">1</MenuItem>
-                            <MenuItem value="2">2</MenuItem>
-                            <MenuItem value="3">3</MenuItem>
-                        </TextField>
+                        <FormControlLabel
+                            value="auto"
+                            control={<Switch color="success" />}
+                            label="Automátioco"
+                            labelPlacement="end"
+                        />
+                        <Box sx={{ flexGrow: 1, overflow: 'hidden', maxWidth: 180 }}>
+                            <Item sx={{ p: 1 }}>
+                                <Stack spacing={2} direction="row" sx={{ alignItems: 'center' }}>
+                                    <CheckCircle />
+                                    <Typography noWrap>PRODUZINDO</Typography>
+                                </Stack>
+                            </Item>
+                        </Box>
+                    </Grid>
+                    <Grid
+                        display={'flex'}
+                        flexDirection={'row'}
+                        alignItems={'center'}
+                        bgcolor={theme.palette.background.paper}
+                        borderRadius={2}
+                        border={'1px solid'}
+                        borderColor={theme.palette.primary.light}
+                        justifyContent={'space-between'}
+                        gap={2}
+                        p={1}
+                        width="100%"
+                        height="100%"
+                    >
                     </Grid>
                 </Grid>
             </Grid>
