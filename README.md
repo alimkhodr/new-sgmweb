@@ -4,11 +4,12 @@
 ## Pré-requisitos
 - [Node.js](https://nodejs.org/en/)
 
-
 ## Componentização
-Material UI é uma biblioteca de componentes React de código aberto que implementa o Material Design do Google.
 - [Material UI](https://mui.com/)
+Material UI é uma biblioteca de componentes React de código aberto que implementa o Material Design do Google.
 
+## Conteinerização
+- [Docker](https://www.docker.com/)
 
 ## Clonando o Repositório
 Clone este repositório usando o comando:
