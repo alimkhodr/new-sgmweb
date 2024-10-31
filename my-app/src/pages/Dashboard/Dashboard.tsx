@@ -1,6 +1,6 @@
 import { CheckCircle, InsertInvitation } from '@mui/icons-material';
-import { Button, Chip, FormControlLabel, Icon, IconButton, MenuItem, Paper, Switch, TextField, Typography } from '@mui/material';
-import { Box, color, Grid, Stack, styled } from '@mui/system';
+import { Button, FormControlLabel, IconButton, MenuItem, Paper, Switch, TextField, Typography } from '@mui/material';
+import { Box, Grid, Stack, styled } from '@mui/system';
 import { useState } from 'react';
 import theme from '../../theme';
 import Shortcuts from '../../components/Date/DateRanger';
@@ -128,7 +128,7 @@ const Dashboard = () => {
                         borderRadius={2}
                         border={'1px solid'}
                         borderColor={theme.palette.primary.light}
-                        justifyContent={'space-between'}
+                        justifyContent={'space-evenly'}
                         gap={2}
                         p={1}
                         width="100%"

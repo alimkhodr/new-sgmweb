@@ -41,7 +41,10 @@ export default function Shortcuts({ onDateRangeSelected, onCloseModal, open }: S
     px: 4,
     pb: 3,
     borderRadius: 2,
-    maxWidth: 400
+    maxWidth: 400,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2
   };
 
   return (
@@ -54,7 +57,8 @@ export default function Shortcuts({ onDateRangeSelected, onCloseModal, open }: S
       <Box sx={styleModal}>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
           <>
-            <Box display="flex" justifyContent="space-between" alignItems={`center`} gap={2}>
+            <Typography variant='h5' fontWeight={'bold'} sx={{ mt: 1 }}>Selecione o período</Typography>
+            <Box display="flex" justifyContent="space-between" alignItems={`center`} gap={2} mt={1}>
               <DatePicker
                 label="Início"
                 value={startDate}
