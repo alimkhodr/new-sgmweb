@@ -1,6 +1,17 @@
 <p align="center"><img src="https://github.com/aptivjam/new-sgmweb/blob/master/my-app/src/assets/images/logo/sgmweb.svg" width="20%"></p>
 <p align="center">Sistema de Gestão de Manufatura - Web</p>
 
+<p align="center">
+[![Next][Next.js]][Next-url]
+[![React][React.js]][React-url]
+[![Vue][Vue.js]][Vue-url]
+[![Angular][Angular.io]][Angular-url]
+[![Svelte][Svelte.dev]][Svelte-url]
+[![Laravel][Laravel.com]][Laravel-url]
+[![Bootstrap][Bootstrap.com]][Bootstrap-url]
+[![JQuery][JQuery.com]][JQuery-url]
+</p>
+
 ## Pré-requisitos
 - [Node.js](https://nodejs.org/en/)
 
@@ -72,4 +83,28 @@ docker-compose.yml
 >Arquivo onde junta `Dockerfile.backend` e `Dockerfile.my-app` na docker, ele basicamente roda na docker o que você roda no pc.
 <br>
 <p align="center"><img src="https://github.com/user-attachments/assets/bb4c0c56-bf3e-4471-9d88-8056135c8f9f" width="20%"></p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
+[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
+[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
+[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
+[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
+[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
+[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
+[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
+[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/othneildrew
+[product-screenshot]: images/screenshot.png
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Next-url]: https://nextjs.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
+[Vue-url]: https://vuejs.org/
+[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
+[Angular-url]: https://angular.io/
 
