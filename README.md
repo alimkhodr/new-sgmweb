@@ -4,18 +4,20 @@
 ## Pré-requisitos
 - [Node.js](https://nodejs.org/en/)
 
+
+## Componentização
+Material UI é uma biblioteca de componentes React de código aberto que implementa o Material Design do Google.
+- [Material UI](https://mui.com/)
+
+
 ## Clonando o Repositório
-
 Clone este repositório usando o comando:
-
 ```bash
 git clone https://github.com/aptivjam/new-sgmweb
 ```
 
 ## Rodando BackEnd
-
 Rode o BackEnd usando o comando:
-
 ```bash
 cd backend
 npm install (primeira vez)
@@ -23,9 +25,7 @@ node index.js
 ```
 
 ## Rodando FrontEnd
-
 Rode o FrontEnd usando o comando:
-
 ```bash
 cd my-app
 npm install (primeira vez)
@@ -33,9 +33,7 @@ npm run dev
 ```
 
 ## Atualizando aplicação no servidor
-
 Após atualizar aplicação e fazer o commit siga estes passos:
-
 1. Acesso remoto no mfgsvr3
 2. Abrir terminal
 3. Ir para `C:\new-sgmweb`
