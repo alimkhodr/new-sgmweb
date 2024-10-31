@@ -9,7 +9,7 @@
 Clone este repositório usando o comando:
 
 ```bash
-git clone https://github.com/aptivjam/sgmweb
+git clone https://github.com/aptivjam/new-sgmweb
 ```
 
 ## Rodando BackEnd
