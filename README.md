@@ -6,10 +6,11 @@
 
 ## Componentização
 - [Material UI](https://mui.com/)
-Material UI é uma biblioteca de componentes React de código aberto que implementa o Material Design do Google.
+<p>Material UI é uma biblioteca de componentes React de código aberto que implementa o Material Design do Google.</p>
 
 ## Conteinerização
 - [Docker](https://www.docker.com/)
+<p>Docker é uma tecnologia de conteinerização open source projetada para combinar vários processos em um único contêiner.</p>
 
 ## Clonando o Repositório
 Clone este repositório usando o comando:
