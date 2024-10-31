@@ -54,17 +54,20 @@ my-app\src\theme.ts
 backend\.env
 >Arquivo de configuração do backend, ele não é commitado para o github, caso tenha que altera-lo tera que alterar direto no servidor.
 
-backend\index.js
->Arquivo principal do backend.
-
 backend\src\routes\authRoutes.js
 >Arquivo de rotas do backend, sempre que criar uma API tem que criar uma rota para ela.
 
 certs
 >Pasta onde contém os certificados para o site ser um link https.
 
+backend\index.js
+>Arquivo principal do backend, onde roda a aplicação.
+
+my-app\vite.config.ts
+>Arquivo principal do FrontEnd, onde roda a aplicação.
+
 docker-compose.yml
->Arquivo onde junta `Dockerfile.backend` e `Dockerfile.my-app` na docker.
+>Arquivo onde junta `Dockerfile.backend` e `Dockerfile.my-app` na docker, ele basicamente roda na docker o que você roda no pc.
 <br>
 <p align="center"><img src="https://github.com/user-attachments/assets/bb4c0c56-bf3e-4471-9d88-8056135c8f9f" width="20%"></p>
 
